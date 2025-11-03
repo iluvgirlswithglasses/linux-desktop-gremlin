@@ -1,0 +1,9 @@
+[project]
+name = "linux-desktop-gremlin"
+version = "0.1.0"
+description = "KurtVelasco's desktop gremlin, now on Linux!"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "pyside6>=6.10.0",
+]
