@@ -10,13 +10,15 @@ https://github.com/user-attachments/assets/eeb75510-9725-4f3a-a259-0959ddc22603
 - Works on both X11 (with picom) and Hyprland (with XWayland).
 - Interactive controls:
     - **Drag & Drop:** 🖱️ Click and drag your gremlins to move 'em.
-    - **Walk**: ⌨️ Cursor-following does not work in Wayland 🥺🥺🥺. So hover your mouse over the gremlins, then use W/A/S/D to make 'em skedaddle 💨💨.
+    - **Walk**: ⌨️ ~Cursor-following does not work in Wayland 🥺🥺🥺~. So hover your mouse over the gremlins, then use W/A/S/D to make 'em skedaddle 💨💨.
     - **Secret Move:** 💃 Right-click to see what happens. (It's Mambo time 😎😎)
     - **Headpats:** 🖐️ You can pat their head by clicking the top hotspot. (Still looking for a Mambo patting animation, send help.)
 
+> Note: It seems that the "Cursor-following does not work in Wayland" statement of mine was, in fact, a skill issue 😩😩. I'll implement it as soon as I can.
+
 # Some differences between this and KurtVelasco's Desktop Gremlins
 
-Aside from the differences that originate from platform problems (e.g. cursor-following doesn't work on Wayland), I also made some changes to the animation flow so as to fit my preferences. I don't think it's noticable, I just want to clearly announce that these discrepancies are not bugs, but intended features.
+Aside from the differences that originate from platform problems, I also made some changes to the animation flow so as to fit my preferences. I don't think it's noticable, I just want to clearly announce that these discrepancies are not bugs, but intended features.
 
 Also, for anyone who wants to dive in and tinker: I took KurtVelasco's original state management code and refactored it from a pile of if-else into a clean, classic Finite State Machine. If you want to add your own animations or change the logic, just check out the `animation_tick` method in `gremlin.py`. It's deadass simple. Go wild.
 
@@ -99,5 +101,15 @@ Execute the script that matches your setup, then a gremlin shall be spawned:
 ./run-wayland.sh        # for running on Hyprland
 ./run-uv-x11.sh         # for running with virtual environment on X11
 ./run-uv-wayland.sh     # for running with virtual environment on Hyprland
+
+# You can now close the terminal which you executed these scripts with.
+# The gremlin won't be despawned unless you use your hotkeys for closing window,
+# like alt+f4 or mod+q.
 ```
+
+# Stay Tuned! 🚀
+
+I'll be adding more characters as soon as my full-time job and university decide to give me a break.
+
+Also, got a cool spritesheet you're dying to see running on your desktop? Feel free to open an issue on GitHub and share! Thank you!
 
