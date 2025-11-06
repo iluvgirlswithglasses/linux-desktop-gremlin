@@ -25,6 +25,7 @@ class Settings:
     # Why do I use "Matikanetannhauser" instead of "Mambo", you might ask?
     # Well, my name is iluvgirlswithglasses, what do you expect about my length preferences?
     StartingChar = "Matikanetannhauser"
+    Systray = False
     FollowRadius = 150.0
     FrameWidth = 200
     FrameHeight = 200

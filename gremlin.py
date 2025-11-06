@@ -286,6 +286,8 @@ class GremlinWindow(QWidget):
     # --- @! System Tray and App Lifecycle ---------------------------------------------------------
 
     def setup_tray_icon(self):
+        if not settings.Settings.Systray:
+            return
         self.tray_icon = QSystemTrayIcon(self)
 
         icon_path = os.path.join(settings.BASE_DIR, "icon.ico")
@@ -314,14 +316,17 @@ class GremlinWindow(QWidget):
         self.tray_icon.show()
 
     def reset_app(self):
-        self.tray_icon.hide()
+        if settings.Settings.Systray:
+            self.tray_icon.hide()
         QApplication.quit()
         os.execl(sys.executable, sys.executable, *sys.argv)
 
     def close_app(self):
         self.master_timer.stop()
         self.idle_timer.stop()
-        self.tray_icon.hide()
+
+        if settings.Settings.Systray:
+            self.tray_icon.hide()
 
         self.close_timer = QTimer(self)
         self.close_timer.timeout.connect(self.outro_tick)

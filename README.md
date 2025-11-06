@@ -115,9 +115,11 @@ Execute the script that matches your setup, then a gremlin shall be spawned:
 
 # 🔧 Customize your Gremlins!
 
-For now, the only customization that you can do without touching the source code is: **Do you want the gremlins to annoy you at random time or not** 😜
+## How to Make Your Gremlin Annoy You (Occasionally!)
 
-To control this, open `./spritesheet/<character>/emote-config.json`. You'll see this:
+Do you want the gremlins to annoy you at random time or not? 😜
+
+To control this, open `./spritesheet/<character>/emote-config.json`. You'll see:
 
 ```json
 {
@@ -133,6 +135,10 @@ If you set `AnnoyEmote` to `false`, then nothing happens. If you set it to `true
 - If you leave them bored for a while (a random time between `MinEmoteTriggerMinutes` and `MaxEmoteTriggerMinutes`), they will suddenly play a special emote (with sound!) all by themselves 😙😙.
 - The emote will last for the number of milliseconds set in `EmoteDuration`.
   - *(Note: For now, this duration only affects the animation, not the sound effect, sorry 😢.)*
+
+## How to Enable or Disable the System Tray
+
+This program's systray is disabled by default, and you won't lose any functionality by disabling the systray either. However, if you need it, you might enable it by modifying the `Systray` field in `./config.json` to `true`.
 
 # Stay Tuned! 🚀
 
