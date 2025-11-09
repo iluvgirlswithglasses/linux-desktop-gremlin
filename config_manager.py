@@ -1,7 +1,7 @@
 
 import os
 import settings
-from flask import json
+import json
 
 
 def load(path, instance) -> bool:
