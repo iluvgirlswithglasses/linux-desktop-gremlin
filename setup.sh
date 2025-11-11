@@ -2,7 +2,7 @@
 
 # clone the repo into ~/.config
 echo "Cloning repo into ~/.config/linux-desktop-gremlin"
-git clone https://github.com/iluvgirlswithglasses/linux-desktop-gremlin ~/.config/linux-desktop-gremlin
+git clone https://github.com/xgameisdabest/linux-desktop-gremlin ~/.config/linux-desktop-gremlin
 echo "Clone completed!"
 
 # hop in the directory
@@ -76,7 +76,7 @@ case "$choice" in
 
 	mkdir -p "$INSTALL_PATH" "$BIN_PATH" "$(dirname "$DESKTOP_FILE")"
 
-	ln -s "$INSTALL_PATH/gremlin-picker.sh" "$LINK_PATH"
+	ln -sf "$INSTALL_PATH/gremlin-picker.sh" "$LINK_PATH"
 	chmod +x "$LINK_PATH"
 
 	cat >"$DESKTOP_FILE" <<EOF
