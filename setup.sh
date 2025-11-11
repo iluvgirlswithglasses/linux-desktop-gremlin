@@ -48,7 +48,7 @@ read choice
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 INSTALL_PATH="$HOME/.config/linux-desktop-gremlin"
 BIN_PATH="$HOME/.local/bin"
-LINK_PATH="$BIN_PATH/gremlin_picker"
+LINK_PATH="$BIN_PATH/gremlin-picker"
 DESKTOP_FILE="$HOME/.local/share/applications/gremlin_picker.desktop"
 ICON_PATH="$INSTALL_PATH/icon.png" # optional icon
 
@@ -76,11 +76,7 @@ case "$choice" in
 
 	mkdir -p "$INSTALL_PATH" "$BIN_PATH" "$(dirname "$DESKTOP_FILE")"
 
-<<<<<<< HEAD
 	ln -s "$INSTALL_PATH/gremlin-picker.sh" "$LINK_PATH"
-=======
-	ln -sf "$INSTALL_PATH/gremlin_picker.sh" "$LINK_PATH"
->>>>>>> parent of 33be5d1 (updated setup.sh)
 	chmod +x "$LINK_PATH"
 
 	cat >"$DESKTOP_FILE" <<EOF
@@ -123,11 +119,7 @@ EOF
 	echo "Reinstalling latest version..."
 	mkdir -p "$INSTALL_PATH" "$BIN_PATH" "$(dirname "$DESKTOP_FILE")"
 
-<<<<<<< HEAD
-	ln -s "$INSTALL_PATH/gremlin-picker.sh" "$LINK_PATH"
-=======
-	ln -sf "$INSTALL_PATH/gremlin_picker.sh" "$LINK_PATH"
->>>>>>> parent of 33be5d1 (updated setup.sh)
+	ln -sf "$INSTALL_PATH/gremlin-picker.sh" "$LINK_PATH"
 	chmod +x "$LINK_PATH"
 
 	cat >"$DESKTOP_FILE" <<EOF
