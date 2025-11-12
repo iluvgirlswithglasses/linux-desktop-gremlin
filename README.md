@@ -69,7 +69,7 @@ To make the gremlin's background transparent, your compositor must be configured
 
 ## 2. Run the installation script
 
-Just run the following script, and it will take care of the rest for you:
+Just run the following script, and it will take care of the rest:
 
 ```sh
 curl -s https://raw.githubusercontent.com/iluvgirlswithglasses/linux-desktop-gremlin/refs/heads/main/install.sh | bash
@@ -90,6 +90,9 @@ Otherwise, you can navigate to `~/.config/linux-desktop-gremlin/` and execute th
 ./run-xwayland.sh       # for running on Hyprland
 ./run-uv-x11.sh         # for running with virtual environment on X11
 ./run-uv-xwayland.sh    # for running with virtual environment on Hyprland
+
+# You may also want to see section "How to Choose Your Gremlin (If you don't use
+# Rofi)" if you want to run the program with these scripts.
 
 # You can now close the terminal which you executed these scripts with.
 # The gremlin won't be despawned unless you use your hotkeys for closing window,
@@ -140,6 +143,9 @@ Execute the script that matches your setup, then a gremlin shall be spawned:
 ./run-uv-xwayland.sh    # for running with virtual environment on Hyprland
 ./gremlin-picker.sh     # if you want to use a GUI picker (you need rofi installed)
 
+# For non-rofi users: You may want to see section "How to Choose Your Gremlin
+# (If you don't use Rofi)"
+
 # You can now close the terminal which you executed these scripts with.
 # The gremlin won't be despawned unless you use your hotkeys for closing window,
 # like alt+f4 or mod+q.
@@ -148,29 +154,6 @@ Execute the script that matches your setup, then a gremlin shall be spawned:
 You would also need to configure your compositor correctly so that the gremlins have fully transparent background. Refer to section "How to Install and Run (Automatically)" > "1. Configure your Compositor".
 
 # 🔧 Customizations!
-
-## How to Choose Your Gremlin
-
-Wanna checkout other gremlins than Matikanetannhauser?
-
-https://github.com/user-attachments/assets/26e2a3b0-4fde-4a3a-926f-ad9f1e1cfb07
-
-
-Firstly, you may check for available gremlins in the `./spritesheet` directory. For example:
-
-```
-spritesheet/
-├── mambo
-└── rice-shower
-```
-
-Then, you can pass a gremlin's name as an argument to the run script, and she shall be spawned. For example:
-
-```sh
-./run-uv-xwayland.sh rice-shower
-```
-
-You can also specify your default gremlin in `./config.json`.
 
 ## How to Make Your Gremlin Annoy You (Occasionally!)
 
@@ -196,6 +179,28 @@ If you set `AnnoyEmote` to `false`, then nothing happens. If you set it to `true
 ## How to Enable or Disable the System Tray
 
 This program's systray is disabled by default, and you won't lose any functionality by disabling the systray either. However, if you need it, you might enable it by modifying the `Systray` field in `./config.json` to `true`.
+
+## How to Choose Your Gremlin (If you don't use Rofi)
+
+You don't use Rofi to pick a gremlin, but still wanna checkout other gremlins than Matikanetannhauser?
+
+https://github.com/user-attachments/assets/26e2a3b0-4fde-4a3a-926f-ad9f1e1cfb07
+
+Firstly, you may check for available gremlins in the `./spritesheet` directory. For example:
+
+```
+spritesheet/
+├── mambo
+└── rice-shower
+```
+
+Then, you can pass a gremlin's name as an argument to the run script, and she shall be spawned. For example:
+
+```sh
+./run-uv-xwayland.sh rice-shower
+```
+
+You can also specify your default gremlin in `./config.json`.
 
 # 🚀 Stay Tuned!
 
