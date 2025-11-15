@@ -141,14 +141,14 @@ class GremlinWindow(QWidget):
 
         # --- @! handle state entry ------------------------------------------------------
         match new_state:
-            case State.DRAGGING:
+            case State.GRAB:
                 self.play_sound("grab.wav")
-            case State.WALKING:
-                if self.current_state != State.WALKING:
+            case State.WALK:
+                if self.current_state != State.WALK:
                     self.play_sound("run.wav")
             case State.WALK_IDLE:
                 self.walk_idle_timer.start(2000)
-            case State.CLICK:
+            case State.POKE:
                 self.play_sound("mambo.wav")
             case State.PAT:
                 self.play_sound("pat.wav")
@@ -176,32 +176,34 @@ class GremlinWindow(QWidget):
         """ Resets the frame counter for the new state. """
         c = settings.CurrentFrames
         match state:
-            case State.INTRO:
-                c.Intro = 0
             case State.IDLE:
                 c.Idle = 0
-            case State.WALK_IDLE:
-                c.WalkIdle = 0
             case State.HOVER:
                 c.Hover = 0
-            case State.WALKING:
-                reset_all_walk_frames()
-            case State.DRAGGING:
+            case State.SLEEP:
+                c.Sleep = 0
+            case State.INTRO:
+                c.Intro = 0
+            case State.OUTRO:
+                pass
+            case State.GRAB:
                 c.Grab = 0
-            case State.CLICK:
-                c.Click = 0
+            case State.WALK:
+                reset_all_walk_frames()
+            case State.WALK_IDLE:
+                c.WalkIdle = 0
+            case State.POKE:
+                c.Poke = 0
             case State.PAT:
                 c.Pat = 0
-            case State.EMOTE:
-                c.Emote = 0
-            case State.SLEEPING:
-                c.Sleep = 0
             case State.LEFT_ACTION:
                 c.LeftAction = 0
             case State.RIGHT_ACTION:
                 c.RightAction = 0
             case State.RELOAD:
                 c.Reload = 0
+            case State.EMOTE:
+                c.Emote = 0
 
     # --- @! Animations ------------------------------------------------------------------
 
@@ -247,14 +249,14 @@ class GremlinWindow(QWidget):
                 c.Hover = self.play_animation(
                     sprite_manager.get(m.Hover), c.Hover, f.Hover)
 
-            case State.WALKING:
+            case State.WALK:
                 self.handle_walking_animation_and_movement()
 
             case State.WALK_IDLE:
                 c.WalkIdle = self.play_animation(
                     sprite_manager.get(m.WalkIdle), c.WalkIdle, f.WalkIdle)
 
-            case State.DRAGGING:
+            case State.GRAB:
                 c.Grab = self.play_animation(
                     sprite_manager.get(m.Grab), c.Grab, f.Grab)
 
@@ -266,15 +268,15 @@ class GremlinWindow(QWidget):
                     self.set_state(
                         State.HOVER if self.underMouse() else State.IDLE)
 
-            case State.CLICK:
-                c.Click = self.play_animation(
-                    sprite_manager.get(m.Click), c.Click, f.Click)
-                if c.Click == 0:
-                    # transition to Hover or Idle when "click" animation finishes
+            case State.POKE:
+                c.Poke = self.play_animation(
+                    sprite_manager.get(m.Poke), c.Poke, f.Poke)
+                if c.Poke == 0:
+                    # transition to Hover or Idle when "poke" animation finishes
                     self.set_state(
                         State.HOVER if self.underMouse() else State.IDLE)
 
-            case State.SLEEPING:
+            case State.SLEEP:
                 c.Sleep = self.play_animation(
                     sprite_manager.get(m.Sleep), c.Sleep, f.Sleep)
 
@@ -412,13 +414,13 @@ class GremlinWindow(QWidget):
     def reset_idle_timer(self):
         """ Resets the idle timer and wakes the gremlin up if sleeping. """
         self.idle_timer.start(300 * 1000)
-        if self.current_state == State.SLEEPING:
+        if self.current_state == State.SLEEP:
             self.set_state(State.IDLE)
 
     def idle_timer_tick(self):
         """ After being idle for a long enough time, go to sleep. """
         if self.current_state == State.IDLE:
-            self.set_state(State.SLEEPING)
+            self.set_state(State.SLEEP)
 
     def outro_tick(self):
         s = settings
@@ -465,7 +467,7 @@ class GremlinWindow(QWidget):
     def emote_timer_tick(self):
         """ Fires when the emote timer is up. """
         # only trigger if no active interaction is happening
-        if self.current_state in [State.IDLE, State.HOVER, State.SLEEPING]:
+        if self.current_state in [State.IDLE, State.HOVER, State.SLEEP]:
             self.set_state(State.EMOTE)
 
         # reset the timer for the next emote
@@ -494,21 +496,21 @@ class GremlinWindow(QWidget):
 
         # switch states based on mouse button
         if event.button() == Qt.MouseButton.LeftButton:
-            if self.current_state not in [State.DRAGGING, State.PAT, State.CLICK]:
-                self.set_state(State.DRAGGING)
+            if self.current_state not in [State.GRAB, State.PAT, State.POKE]:
+                self.set_state(State.GRAB)
                 self.drag_pos = event.globalPosition().toPoint() - self.pos()
         elif event.button() == Qt.MouseButton.RightButton:
-            if self.current_state not in [State.DRAGGING, State.PAT, State.CLICK]:
-                self.set_state(State.CLICK)
+            if self.current_state not in [State.GRAB, State.PAT, State.POKE]:
+                self.set_state(State.POKE)
 
     def mouseMoveEvent(self, event):
-        if (self.current_state == State.DRAGGING and
+        if (self.current_state == State.GRAB and
                 event.buttons() == Qt.MouseButton.LeftButton):
             self.move(event.globalPosition().toPoint() - self.drag_pos)
 
     def mouseReleaseEvent(self, event):
         if event.button() == Qt.MouseButton.LeftButton:
-            if self.current_state == State.DRAGGING:
+            if self.current_state == State.GRAB:
                 # transition to Hover or Idle when dropped
                 self.set_state(State.HOVER if self.underMouse()
                                else State.IDLE)
@@ -518,13 +520,13 @@ class GremlinWindow(QWidget):
             return
 
         # don't allow walking while in these blocking states
-        if self.current_state in [State.DRAGGING, State.PAT, State.CLICK, State.SLEEPING, State.EMOTE]:
+        if self.current_state in [State.GRAB, State.PAT, State.POKE, State.SLEEP, State.EMOTE]:
             return
 
         self.movement_handler.recordKeyPress(event)
 
         if self.movement_handler.is_moving():
-            self.set_state(State.WALKING)
+            self.set_state(State.WALK)
             self.reset_idle_timer()
 
     def keyReleaseEvent(self, event):
@@ -534,7 +536,7 @@ class GremlinWindow(QWidget):
         self.movement_handler.recordKeyRelease(event)
 
         # if we were walking and are no longer moving...
-        if self.current_state == State.WALKING and not self.movement_handler.is_moving():
+        if self.current_state == State.WALK and not self.movement_handler.is_moving():
             # ...transition to WALK_IDLE
             self.set_state(State.WALK_IDLE)
 
@@ -544,14 +546,14 @@ class GremlinWindow(QWidget):
         if self.current_state == State.IDLE:
             self.set_state(State.HOVER)
 
-        if self.current_state not in [State.WALKING, State.SLEEPING, State.CLICK, State.DRAGGING, State.EMOTE]:
+        if self.current_state not in [State.WALK, State.GRAB, State.SLEEP, State.POKE, State.EMOTE]:
             self.play_sound("hover.wav", 3)
 
     def leaveEvent(self, event):
         self.clearFocus()
         self.movement_handler.recordMouseLeave()    # stop all movement
 
-        if self.current_state == State.WALKING:
+        if self.current_state == State.WALK:
             # if mouse leaves while walking, stop walking and go to WALK_IDLE
             self.set_state(State.WALK_IDLE)
         elif self.current_state == State.HOVER:
@@ -562,7 +564,7 @@ class GremlinWindow(QWidget):
     # --- @! Hotspot Click Handlers ------------------------------------------------------
     def on_hotspot_click(self, event, state):
         block_states = [
-            State.DRAGGING, State.CLICK, State.SLEEPING, State.EMOTE, State.RELOAD
+            State.GRAB, State.POKE, State.SLEEP, State.EMOTE, State.RELOAD
         ]
         if event.button() == Qt.MouseButton.RightButton:
             if self.current_state not in block_states:

@@ -8,20 +8,20 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 
 class State(Enum):
-    INTRO = auto()
     IDLE = auto()
     HOVER = auto()
-    WALKING = auto()
-    WALK_IDLE = auto()
-    DRAGGING = auto()
-    CLICK = auto()
-    PAT = auto()
-    SLEEPING = auto()
+    SLEEP = auto()
+    INTRO = auto()
     OUTRO = auto()
-    EMOTE = auto()
+    GRAB = auto()
+    WALK = auto()
+    WALK_IDLE = auto()
+    POKE = auto()
+    PAT = auto()
     LEFT_ACTION = auto()
     RIGHT_ACTION = auto()
     RELOAD = auto()
+    EMOTE = auto()
 
 
 class Settings:
@@ -68,7 +68,6 @@ class SpriteMap:
     HasReloadAnimation = False
     Idle = None
     Hover = None
-    Click = None
     Sleep = None
     Intro = None
     Outro = None
@@ -82,6 +81,7 @@ class SpriteMap:
     DownLeft = None
     DownRight = None
     WalkIdle = None
+    Poke = None
     Pat = None
     LeftAction = None
     RightAction = None
@@ -92,7 +92,6 @@ class SpriteMap:
 class FrameCounts:
     Idle = None
     Hover = None
-    Click = None
     Sleep = None
     Intro = None
     Outro = None
@@ -106,6 +105,7 @@ class FrameCounts:
     DownLeft = None
     DownRight = None
     WalkIdle = None
+    Poke = None
     Pat = None
     LeftAction = None
     RightAction = None
@@ -116,7 +116,6 @@ class FrameCounts:
 class CurrentFrames:
     Idle = 0
     Hover = 0
-    Click = 0
     Sleep = 0
     Intro = 0
     Outro = 0
@@ -130,6 +129,7 @@ class CurrentFrames:
     DownLeft = 0
     DownRight = 0
     WalkIdle = 0
+    Poke = 0
     Pat = 0
     LeftAction = 0
     RightAction = 0
