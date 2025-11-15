@@ -526,6 +526,10 @@ class GremlinWindow(QWidget):
 
         self.movement_handler.recordKeyPress(event)
 
+        if self.movement_handler.is_emotekey_pressed():
+            self.set_state(State.EMOTE)
+            self.reset_emote_timer()
+
         if self.movement_handler.is_moving():
             self.set_state(State.WALK)
             self.reset_idle_timer()

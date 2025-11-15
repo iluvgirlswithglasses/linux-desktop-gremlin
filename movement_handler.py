@@ -15,6 +15,7 @@ class MovementHandler:
         self.a = False
         self.s = False
         self.d = False
+        self.p = False
         self.v = settings.Settings.MoveSpeed
 
     def getVelocity(self) -> tuple[int, int]:
@@ -47,6 +48,9 @@ class MovementHandler:
         if self.a ^ self.d:
             horizontal = "Left" if self.a else "Right"
         return vertical + horizontal
+    
+    def is_emotekey_pressed(self) -> bool:
+        return self.p
 
     # --- @! event recorders -------------------------------------------------------------
 
@@ -61,6 +65,8 @@ class MovementHandler:
                 self.s = True
             case Qt.Key.Key_D:
                 self.d = True
+            case Qt.Key.Key_P:
+                self.p = True
 
     def recordKeyRelease(self, event):
         key = event.key()
@@ -73,9 +79,12 @@ class MovementHandler:
                 self.s = False
             case Qt.Key.Key_D:
                 self.d = False
+            case Qt.Key.Key_P:
+                self.p = False
 
     def recordMouseLeave(self):
         self.w = False
         self.a = False
         self.s = False
         self.d = False
+        self.p = False
