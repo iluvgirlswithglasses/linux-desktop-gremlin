@@ -572,6 +572,9 @@ class GremlinWindow(QWidget):
                 self.reset_idle_timer()
                 self.reset_emote_timer()
                 self.set_state(state)
+        elif event.button() == Qt.MouseButton.LeftButton:
+            # pass left clicks to main handler
+            self.mousePressEvent(event)
 
     def top_hotspot_click(self, event):
         self.on_hotspot_click(event, State.PAT)
