@@ -3,6 +3,7 @@ from enum import Enum, auto
 import os
 import datetime
 from typing import Dict
+from PySide6.QtCore import Qt
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
@@ -36,6 +37,8 @@ class Settings:
     FollowRadius = 150.0
     LastPlayed: Dict[str, datetime.datetime] = {}
     MoveSpeed = 5
+    EmoteKeyEnabled = True
+    EmoteKey = "P"
 
 
 class MouseSettings:
