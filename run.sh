@@ -1,11 +1,11 @@
 #!/bin/sh
 # Launcher for Linux Desktop Gremlins
 USE_UV=1
-USE_VENV=auto
+USE_VENV=0
 
 # Find python and pip
 PYTHON=$(command -v python3 || command -v python) || { echo "Python not found"; exit 1; }
-PIP=$(command -v pip3 || command -v pip) || { echo "pip not found"; exit 1; }
+PIP=$(command -v pip3 || command -v pip || command -v uv) || { echo "pip/uv not found"; exit 1; }
 
 # Parse args
 while [ $# -gt 0 ]; do
@@ -32,7 +32,7 @@ cd "$(dirname "$0")"
 
 # Auto: try uv first
 if [ $USE_UV -eq 1 ] && command -v uv >/dev/null 2>&1; then
-    exec uv run linux-desktop-gremlin "$@"
+    exec uv run python -m src.launcher "$@"
 fi
 
 # Explicit --system
