@@ -2,7 +2,7 @@
 from PySide6.QtCore import Qt
 import sys
 import string
-import settings
+from . import settings
 
 
 def reset_all_walk_frames():

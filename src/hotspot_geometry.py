@@ -1,5 +1,5 @@
 
-import settings
+from . import settings
 
 
 def compute_top_hotspot_geometry():

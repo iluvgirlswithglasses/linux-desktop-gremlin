@@ -10,11 +10,15 @@ from PySide6.QtCore import Qt, QTimer, QRect, QUrl
 from PySide6.QtGui import QIcon, QAction
 from PySide6.QtMultimedia import QSoundEffect
 
-import settings
-import sprite_manager
-from hotspot_geometry import *
-from movement_handler import MovementHandler, reset_all_walk_frames
-from settings import State
+from . import settings
+from . import sprite_manager
+from .hotspot_geometry import (
+    compute_top_hotspot_geometry,
+    compute_left_hotspot_geometry,
+    compute_right_hotspot_geometry
+)
+from .movement_handler import MovementHandler, reset_all_walk_frames
+from .settings import State
 
 
 class GremlinWindow(QWidget):
@@ -34,6 +38,9 @@ class GremlinWindow(QWidget):
             settings.SpriteMap.FrameWidth,
             settings.SpriteMap.FrameHeight
         )
+
+        # Set window title
+        self.setWindowTitle("Gremlins")
 
         # --- @! Main Sprite Display -----------------------------------------------------
         self.sprite_label = QLabel(self)

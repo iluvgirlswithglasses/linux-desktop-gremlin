@@ -5,7 +5,8 @@ import datetime
 from typing import Dict
 from PySide6.QtCore import Qt
 
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+# Point to project root (parent of src/)
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 
 class State(Enum):

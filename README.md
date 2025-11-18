@@ -50,7 +50,7 @@ To make the gremlin's background transparent, your compositor must be configured
 <details>
   <summary>For Hyprland</summary>
 
-  Firstly, you need `xwayland`. Since you're using Hyprland, I suspect you have it already. But if you don't, please install it with this command (or any of its equivalent): 
+  Firstly, you need `xwayland`. Since you're using Hyprland, I suspect you have it already. But if you don't, please install it with this command (or any of its equivalent):
 
   ```sh
   yay -S xorg-xwayland
@@ -207,4 +207,3 @@ You can also specify your default gremlin in `./config.json`.
 I'll be adding more characters as soon as my full-time job and university decide to give me a break.
 
 Also, got a cool spritesheet you're dying to see running on your desktop? Feel free to open an issue on GitHub and share! Thank you!
-

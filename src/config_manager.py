@@ -1,7 +1,7 @@
 
 import os
-import settings
 import json
+from . import settings
 
 
 def load(path, instance) -> bool:
