@@ -1,9 +1,10 @@
 #!/bin/bash
 # an extremely simple gremlin picker using rofi
 
-# move to script directory
-DIR=$( dirname $(realpath "$0") )
-cd $DIR
+# move to project root directory
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PROJECT_DIR="$(dirname "$SCRIPT_DIR")"
+cd "$PROJECT_DIR"
 
 # ensure uv can be found
 export PATH=$PATH:$HOME/.local/bin
@@ -19,20 +20,8 @@ main_menu() {
 		exit 0
 	fi
 
-	# check which session to launch (use uv)
-	if [[ $XDG_SESSION_TYPE == "wayland" ]]; then
-		if command -v uv >/dev/null 2>&1; then
-			./run-uv-xwayland.sh "$pick"
-		else
-			./run-xwayland.sh "$pick"
-		fi
-	elif [[ $XDG_SESSION_TYPE == "x11" ]]; then
-		if command -v uv >/dev/null 2>&1; then
-			./run-uv-x11.sh "$pick"
-		else
-			./run-x11.sh "$pick"
-		fi
-	fi
+	# run with the unified launcher script
+	./run.sh "$pick"
 }
 
 main_menu
