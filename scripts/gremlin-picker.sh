@@ -2,7 +2,7 @@
 # an extremely simple gremlin picker using rofi
 
 # move to project root directory
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+SCRIPT_DIR="$(dirname $(realpath "$0"))"
 PROJECT_DIR="$(dirname "$SCRIPT_DIR")"
 cd "$PROJECT_DIR"
 
