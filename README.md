@@ -71,6 +71,29 @@ To make the gremlin's background transparent, your compositor must be configured
   ```
 </details>
 
+<details>
+  <summary>For Niri</summary>
+
+  Add the following window rules:
+
+  ```conf
+  window-rule {
+      match title="ilgwg_desktop_gremlins.py"
+      draw-border-with-background false
+      opacity 0.99
+      focus-ring {
+          off
+      }
+      border {
+          // Same as focus-ring.
+      }
+      shadow {
+          off
+      }
+  }
+  ```
+</details>
+
 ## 2. Run the installation script
 
 Just run the following script, and it will take care of the rest:
