@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/usr/bin/env bash
 # Launcher for Linux Desktop Gremlins
 USE_UV=1
 USE_VENV=0
