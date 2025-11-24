@@ -1,5 +1,7 @@
 {
     "StartingChar": "Mambo",
     "Systray": false,
-    "FollowRadius": 150.0
+    "FollowRadius": 150.0,
+    "EmoteKeyEnabled": true,
+    "EmoteKey": "P"
 }

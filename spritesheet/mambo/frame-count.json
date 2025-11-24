@@ -1,7 +1,6 @@
 {
     "Idle": 340,
     "Hover": 60,
-    "Click": 120,
     "Sleep": 74,
     "Intro": 56,
     "Outro": 35,
@@ -15,6 +14,10 @@
     "DownLeft": 18,
     "DownRight": 18,
     "WalkIdle": 55,
+    "Poke": 120,
     "Pat": 55,
+    "LeftAction": 0,
+    "RightAction": 0,
+    "Reload": 0,
     "Emote": 54
 }

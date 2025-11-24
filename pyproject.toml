@@ -7,3 +7,6 @@ requires-python = ">=3.12"
 dependencies = [
     "pyside6>=6.10.0",
 ]
+
+[project.scripts]
+linux-desktop-gremlin = "src.launcher:main"

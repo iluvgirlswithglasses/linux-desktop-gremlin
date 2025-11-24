@@ -1,8 +1,8 @@
 
 import os
-import settings
-from settings import SpriteMap
 from PySide6.QtGui import QPixmap
+from . import settings
+from .settings import SpriteMap
 
 CACHE = {}
 

@@ -5,9 +5,11 @@
     "FrameWidth": 300,
     "TopHotspotHeight": 175,
     "TopHotspotWidth": 150,
+    "SideHotspotHeight": 0,
+    "SideHotspotWidth": 0,
+    "HasReloadAnimation": false,
     "Idle": "idle.png",
     "Hover": "hover.png",
-    "Click": "click.png",
     "Sleep": "sleep.png",
     "Intro": "intro.png",
     "Outro": "outro.png",
@@ -21,6 +23,10 @@
     "DownLeft": "run-downleft.png",
     "DownRight": "run-downright.png",
     "WalkIdle": "walk-idle.png",
+    "Poke": "poke.png",
     "Pat": "pat.png",
+    "LeftAction": "",
+    "RightAction": "",
+    "Reload": "",
     "Emote": "emote.png"
 }

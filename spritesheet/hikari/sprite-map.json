@@ -3,11 +3,13 @@
     "SpriteColumn": 10,
     "FrameHeight": 350,
     "FrameWidth": 350,
-    "TopHotspotHeight": 175,
+    "TopHotspotHeight": 125,
     "TopHotspotWidth": 150,
+    "SideHotspotHeight": 150,
+    "SideHotspotWidth": 100,
+    "HasReloadAnimation": true,
     "Idle": "idle.png",
     "Hover": "hover.png",
-    "Click": "click.png",
     "Sleep": "sleep.png",
     "Intro": "intro.png",
     "Outro": "outro.png",
@@ -21,6 +23,10 @@
     "DownLeft": "forward.png",
     "DownRight": "forward.png",
     "WalkIdle": "wIdle.png",
+    "Poke": "poke.png",
     "Pat": "pat.png",
-    "Emote": "intro.png"
+    "LeftAction": "fireL.png",
+    "RightAction": "fireR.png",
+    "Reload": "reload.png",
+    "Emote": "poke.png"
 }

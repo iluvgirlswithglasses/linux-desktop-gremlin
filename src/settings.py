@@ -3,21 +3,30 @@ from enum import Enum, auto
 import os
 import datetime
 from typing import Dict
+from PySide6.QtCore import Qt
 
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+# Point to project root (parent of src/)
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 
 class State(Enum):
-    INTRO = auto()
+    """
+    Defines the possible states of the gremlin.
+    At any given time, the gremlin can only be in one state.
+    """
     IDLE = auto()
     HOVER = auto()
-    WALKING = auto()
-    WALK_IDLE = auto()
-    DRAGGING = auto()
-    CLICK = auto()
-    PAT = auto()
-    SLEEPING = auto()
+    SLEEP = auto()
+    INTRO = auto()
     OUTRO = auto()
+    GRAB = auto()
+    WALK = auto()
+    WALK_IDLE = auto()
+    POKE = auto()
+    PAT = auto()
+    LEFT_ACTION = auto()
+    RIGHT_ACTION = auto()
+    RELOAD = auto()
     EMOTE = auto()
 
 
@@ -29,6 +38,8 @@ class Settings:
     FollowRadius = 150.0
     LastPlayed: Dict[str, datetime.datetime] = {}
     MoveSpeed = 5
+    EmoteKeyEnabled = True
+    EmoteKey = "P"
 
 
 class MouseSettings:
@@ -47,6 +58,20 @@ class EmoteConfig:
     EmoteDuration = 3600
 
 
+class SfxMap:
+    Hover = None
+    Intro = None
+    Outro = None
+    Grab = None
+    Walk = None
+    Poke = None
+    Pat = None
+    LeftAction = None
+    RightAction = None
+    Reload = None
+    Emote = None
+
+
 """
 The following classes should have been shared a trait or something similar.
 I'll implement such generalization later.
@@ -60,9 +85,12 @@ class SpriteMap:
     FrameWidth = None
     TopHotspotHeight = None
     TopHotspotWidth = None
+    SideHotspotHeight = None
+    SideHotspotWidth = None
+    HasReloadAnimation = False
+
     Idle = None
     Hover = None
-    Click = None
     Sleep = None
     Intro = None
     Outro = None
@@ -76,14 +104,17 @@ class SpriteMap:
     DownLeft = None
     DownRight = None
     WalkIdle = None
+    Poke = None
     Pat = None
+    LeftAction = None
+    RightAction = None
+    Reload = ""
     Emote = None
 
 
 class FrameCounts:
     Idle = None
     Hover = None
-    Click = None
     Sleep = None
     Intro = None
     Outro = None
@@ -97,14 +128,17 @@ class FrameCounts:
     DownLeft = None
     DownRight = None
     WalkIdle = None
+    Poke = None
     Pat = None
+    LeftAction = None
+    RightAction = None
+    Reload = None
     Emote = None
 
 
 class CurrentFrames:
     Idle = 0
     Hover = 0
-    Click = 0
     Sleep = 0
     Intro = 0
     Outro = 0
@@ -118,5 +152,9 @@ class CurrentFrames:
     DownLeft = 0
     DownRight = 0
     WalkIdle = 0
+    Poke = 0
     Pat = 0
+    LeftAction = 0
+    RightAction = 0
+    Reload = 0
     Emote = 0

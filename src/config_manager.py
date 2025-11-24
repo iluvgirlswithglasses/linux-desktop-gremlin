@@ -1,7 +1,7 @@
 
 import os
-import settings
 import json
+from . import settings
 
 
 def load(path, instance) -> bool:
@@ -39,6 +39,18 @@ def load_master_config(argv) -> bool:
         settings.Settings.StartingChar = charname
 
     return True
+
+
+def load_sfx_map() -> bool:
+    """ Loads the sound effects map config. """
+    path = os.path.join(
+        settings.BASE_DIR,
+        "sounds", settings.Settings.StartingChar.lower(), "sfx-map.json"
+    )
+    if not os.path.exists(path):
+        print(f"Warning: SFX map file not found at {path}")
+        return False
+    return load(path, settings.SfxMap)
 
 
 def load_sprite_map() -> bool:
