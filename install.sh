@@ -2,7 +2,7 @@
 
 # Clone the repo into ~/.config
 echo "Cloning repo into ~/.config/linux-desktop-gremlin"
-git clone https://github.com/xgameisdabest/linux-desktop-gremlin ~/.config/linux-desktop-gremlin
+git clone https://github.com/iluvgirlswithglasses/linux-desktop-gremlin ~/.config/linux-desktop-gremlin
 echo "Clone completed!"
 cd ~/.config/linux-desktop-gremlin
 
