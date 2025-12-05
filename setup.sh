@@ -70,6 +70,18 @@ uninstall() {
 	fi
 }
 
+uninstall_update() {
+	if [ -L "$LINK_PATH" ]; then
+		rm "$LINK_PATH"
+		echo "Removed symlink: $LINK_PATH"
+	fi
+
+	if [ -f "$DESKTOP_FILE" ]; then
+		rm "$DESKTOP_FILE"
+		echo "Removed desktop entry: $DESKTOP_FILE"
+	fi
+}
+
 case "$choice" in
 1)
 	echo "→ Installing Linux Desktop Gremlin..."
@@ -114,7 +126,7 @@ EOF
 	fi
 
 	echo "Uninstalling current version..."
-	uninstall
+	uninstall_update
 
 	echo "Reinstalling latest version..."
 	mkdir -p "$INSTALL_PATH" "$BIN_PATH" "$(dirname "$DESKTOP_FILE")"
