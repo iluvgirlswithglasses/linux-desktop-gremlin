@@ -3,7 +3,7 @@
     "Intro": "intro.wav",
     "Outro": "",
     "Grab": "grab.wav",
-    "Walk": "walk.wav",
+    "Walk": "run.wav",
     "Poke": "poke.wav",
     "Pat": "pat.wav",
     "LeftAction": "emote1.wav",
