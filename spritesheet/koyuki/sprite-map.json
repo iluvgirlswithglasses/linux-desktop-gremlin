@@ -7,6 +7,7 @@
 	"TopHotspotWidth": 125,
 	"SideHotspotHeight": 150,
 	"SideHotspotWidth": 150,
+	"HasReloadAnimation": true,
 	"Idle": "idle.png",
 	"Hover": "hover.png",
 	"Poke": "poke.png",
@@ -26,5 +27,6 @@
 	"RightAction": "emote3.png",
 	"WalkIdle": "wIdle.png",
 	"Pat": "pat.png",
-	"Emote": "emote4.png"
+	"Emote": "emote4.png",
+	"Reload": "emote4.png"
 }
