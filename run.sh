@@ -5,7 +5,7 @@ USE_VENV=0
 
 run_detached() {
     # Run the command in background (&), silence output, and disown the PID
-    "$@"&
+    "$@" >/dev/null 2>&1 &
     disown $!
     exit 0
 }
