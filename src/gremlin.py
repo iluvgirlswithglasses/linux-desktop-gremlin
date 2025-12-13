@@ -409,6 +409,9 @@ class GremlinWindow(QWidget):
         if settings.Settings.Systray:
             self.tray_icon.hide()
 
+        # here should be played the outro sound
+        self.play_sound(settings.SfxMap.Outro)
+
         self.close_timer = QTimer(self)
         self.close_timer.timeout.connect(self.outro_tick)
         self.close_timer.start(1000 // settings.SpriteMap.FrameRate)
