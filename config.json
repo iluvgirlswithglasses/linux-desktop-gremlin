@@ -3,5 +3,6 @@
     "Systray": false,
     "FollowRadius": 150.0,
     "EmoteKeyEnabled": true,
-    "EmoteKey": "P"
+    "EmoteKey": "P",
+    "Volume": 0.8
 }

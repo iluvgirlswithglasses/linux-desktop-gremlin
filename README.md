@@ -201,6 +201,13 @@ You can also trigger this animation by hovering over the gremlin and press "P". 
 
 This program's systray is disabled by default, and you won't lose any functionality by disabling the systray either. However, if you need it, you might enable it by modifying the `Systray` field in `./config.json` to `true`.
 
+## Try other forks!
+
+There are some forks of this repository that you may want to checkout!
+
+- [#22](https://github.com/iluvgirlswithglasses/linux-desktop-gremlin/pull/22): Adds Gold Ship, Oguri Cap and Agnes Tachyon (I will either merge this, or put it in [releases](https://github.com/iluvgirlswithglasses/linux-desktop-gremlin/releases) in the future)
+- [#23](https://github.com/iluvgirlswithglasses/linux-desktop-gremlin/pull/23): Significantly reduces memory usage of the app, though some functionalities will be different.
+
 # 🚀 Stay Tuned!
 
 I'll be adding more characters as soon as my full-time job and university decide to give me a break.

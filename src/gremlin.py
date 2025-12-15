@@ -68,7 +68,7 @@ class GremlinWindow(QWidget):
 
         # --- @! Sound Player ------------------------------------------------------------
         self.sound_player = QSoundEffect(self)
-        self.sound_player.setVolume(0.8)
+        self.sound_player.setVolume(settings.Settings.Volume)
 
         # --- @! Timers ------------------------------------------------------------------
         self.master_timer = QTimer(self)
