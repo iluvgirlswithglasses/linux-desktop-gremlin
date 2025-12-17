@@ -408,6 +408,9 @@ class GremlinWindow(QWidget):
         if settings.Settings.Systray:
             self.tray_icon.hide()
 
+        # correctly sets the outro state to fix some audio issues
+        self.set_state(State.OUTRO)
+
         # here should be played the outro sound
         self.play_sound(settings.SfxMap.Outro)
 
@@ -495,8 +498,8 @@ class GremlinWindow(QWidget):
     # --- @! Event Handlers (Mouse) ------------------------------------------------------
 
     def mousePressEvent(self, event):
-        # Temporarily disable mouse press when emoting...
-        if self.current_state == State.EMOTE:
+        # Temporarily disable mouse press when emoting and while the character is playing the outro
+        if self.current_state in [State.EMOTE, State.OUTRO]:
             return
 
         # ...otherwise, reset the idle timer. Since a click event is an interaction of
@@ -560,7 +563,7 @@ class GremlinWindow(QWidget):
         if self.current_state == State.IDLE:
             self.set_state(State.HOVER)
 
-        if self.current_state not in [State.WALK, State.GRAB, State.SLEEP, State.POKE, State.EMOTE]:
+        if self.current_state not in [State.WALK, State.GRAB, State.SLEEP, State.POKE, State.EMOTE, State.OUTRO]:
             self.play_sound(settings.SfxMap.Hover, 3)
 
     def leaveEvent(self, event):
