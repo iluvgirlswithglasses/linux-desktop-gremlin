@@ -8,6 +8,7 @@ https://github.com/user-attachments/assets/eeb75510-9725-4f3a-a259-0959ddc22603
 💥 Features 💥
 
 - Works on both X11 (with picom) and Hyprland (with XWayland).
+- Also works on Windows and MacOS (follow the manual installation guide).
 - Interactive controls:
     - **Drag & Drop:** 🖱️ Click and drag your gremlins to move 'em.
     - **Walk**: ⌨️ ~Cursor-following does not work in Wayland 🥺🥺🥺~. So hover your mouse over the gremlins, then use W/A/S/D to make 'em skedaddle 💨💨.
@@ -16,7 +17,7 @@ https://github.com/user-attachments/assets/eeb75510-9725-4f3a-a259-0959ddc22603
 
 > Note 1: The *"1 hour of silence occasionally broken up by Mambo"* feature can be turned off (if you are a chicken 🐔🐔). See the "Customize your Gremlins!" section below.
 >
-> Note 2: It seems that the "Cursor-following does not work in Wayland" statement of mine was, in fact, a skill issue 😩😩. I'll implement it as soon as I can.
+> Note 2: It seems that the "Cursor-following does not work in Wayland" statement of mine was, in fact, a skill issue 😩😩.
 
 # Changelog
 
@@ -99,6 +100,7 @@ To make the gremlin's background transparent, your compositor must be configured
 Just run the following script, and it will take care of the rest:
 
 ```sh
+# this will install to ~/.config/linux-desktop-gremlin/
 curl -s https://raw.githubusercontent.com/iluvgirlswithglasses/linux-desktop-gremlin/refs/heads/main/install.sh | bash
 ```
 
@@ -130,7 +132,7 @@ You can install dependencies either in a Python virtual environment or using you
 <details>
   <summary>Method A: Virtual Environment (Recommended)</summary>
 
-  There's nothing that can go wrong about this, except for the disk space.
+  There's nothing that can go wrong about this, except for the disk space. This also works on Windows and MacOS.
 
   ```sh
   # clone repository
@@ -205,7 +207,6 @@ This program's systray is disabled by default, and you won't lose any functional
 
 There are some forks of this repository that you may want to checkout!
 
-- [#22](https://github.com/iluvgirlswithglasses/linux-desktop-gremlin/pull/22): Adds Gold Ship, Oguri Cap and Agnes Tachyon (I will either merge this, or put it in [releases](https://github.com/iluvgirlswithglasses/linux-desktop-gremlin/releases) in the future)
 - [#23](https://github.com/iluvgirlswithglasses/linux-desktop-gremlin/pull/23): Significantly reduces memory usage of the app, though some functionalities will be different.
 
 # 🚀 Stay Tuned!
