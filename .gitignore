@@ -8,3 +8,6 @@ wheels/
 
 # Virtual environments
 .venv
+
+# Placeholder folder for new characters with no configuration set
+new/
