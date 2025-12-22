@@ -1,6 +1,7 @@
 
 import os
 import json
+import random
 from . import settings
 
 
@@ -36,7 +37,31 @@ def load_master_config(argv) -> bool:
     # override with command line args
     if len(argv) > 1:
         charname = argv[1]
-        settings.Settings.StartingChar = charname
+        
+        # finds a random character to select if user chooses Random
+        if charname=="Random":
+
+            character = "" 
+            sprite_path = os.path.join(
+                settings.BASE_DIR,
+                "spritesheet"
+            )
+            if not os.path.exists(sprite_path):
+                print(f"Warning: Spritesheet not found at {sprite_path}")
+                return False
+          
+            characters_list = os.listdir(sprite_path)
+            if len(characters_list) == 0:
+                print(f"Warning: Spritesheet has no map files")
+                return False
+          
+            character = characters_list[random.randint(0,len(characters_list)-1)]
+            
+            
+            settings.Settings.StartingChar = character
+
+        else:
+            settings.Settings.StartingChar = charname
 
     return True
 
