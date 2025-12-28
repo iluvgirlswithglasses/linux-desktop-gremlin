@@ -292,14 +292,14 @@ class GremlinWindow(QWidget):
                     sprite_manager.get(m.Emote), c.Emote, f.Emote)
 
             case State.LEFT_ACTION:
-                if not self.has_reload or self.ammo >= 0:
+                if not self.has_reload or self.ammo > 0:
                     c.LeftAction = self.play_animation(
                         sprite_manager.get(m.LeftAction), c.LeftAction, f.LeftAction)
                 if c.LeftAction == 0:
                     self.handle_reload_check()
 
             case State.RIGHT_ACTION:
-                if not self.has_reload or self.ammo >= 0:
+                if not self.has_reload or self.ammo > 0:
                     c.RightAction = self.play_animation(
                         sprite_manager.get(m.RightAction), c.RightAction, f.RightAction)
                 if c.RightAction == 0:
