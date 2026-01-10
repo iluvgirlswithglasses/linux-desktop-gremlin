@@ -1,14 +1,14 @@
-import datetime
 import os
 import random
 import sys
 
-from PySide6.QtCore import QRect, Qt, QTimer, QUrl
+from PySide6.QtCore import Qt, QTimer
 from PySide6.QtGui import QAction, QIcon
-from PySide6.QtMultimedia import QSoundEffect
 from PySide6.QtWidgets import QApplication, QLabel, QMenu, QSystemTrayIcon, QWidget
 
-from . import settings, sprite_manager
+from . import settings
+from .animation_engine import AnimationEngine
+from .audio_engine import AudioEngine
 from .hotspot_geometry import (
     compute_left_hotspot_geometry,
     compute_right_hotspot_geometry,
@@ -59,9 +59,9 @@ class GremlinWindow(QWidget):
         if self.has_reload:
             self.ammo = 6
 
-        # --- @! Sound Player ------------------------------------------------------------
-        self.sound_player = QSoundEffect(self)
-        self.sound_player.setVolume(settings.Settings.Volume)
+        # --- @! SFX and VFX engines -----------------------------------------------------
+        self.animation_engine = AnimationEngine(self.sprite_label)
+        self.sound_engine = AudioEngine(self)
 
         # --- @! Timers ------------------------------------------------------------------
         self.master_timer = QTimer(self)
@@ -94,7 +94,7 @@ class GremlinWindow(QWidget):
 
         # --- @! Start -------------------------------------------------------------------
         self.setup_tray_icon()
-        self.play_sound(settings.SfxMap.Intro)
+        self.sound_engine.play(settings.SfxMap.Intro)
         self.master_timer.start(1000 // settings.SpriteMap.FrameRate)
         self.idle_timer.start(120 * 1000)
 
@@ -148,29 +148,29 @@ class GremlinWindow(QWidget):
         # --- @! handle state entry ------------------------------------------------------
         match new_state:
             case State.GRAB:
-                self.play_sound(settings.SfxMap.Grab)
+                self.sound_engine.play(settings.SfxMap.Grab)
             case State.WALK:
                 if self.current_state != State.WALK:
-                    self.play_sound(settings.SfxMap.Walk)
+                    self.sound_engine.play(settings.SfxMap.Walk)
             case State.WALK_IDLE:
                 self.walk_idle_timer.start(2000)
             case State.POKE:
-                self.play_sound(settings.SfxMap.Poke)
+                self.sound_engine.play(settings.SfxMap.Poke)
             case State.PAT:
-                self.play_sound(settings.SfxMap.Pat)
+                self.sound_engine.play(settings.SfxMap.Pat)
             case State.LEFT_ACTION:
                 if self.has_reload and self.ammo > 0:
-                    self.play_sound(settings.SfxMap.LeftAction)
+                    self.sound_engine.play(settings.SfxMap.LeftAction)
                     self.ammo -= 1
             case State.RIGHT_ACTION:
                 if self.has_reload and self.ammo > 0:
-                    self.play_sound(settings.SfxMap.RightAction)
+                    self.sound_engine.play(settings.SfxMap.RightAction)
                     self.ammo -= 1
             case State.RELOAD:
-                self.play_sound(settings.SfxMap.Reload)
+                self.sound_engine.play(settings.SfxMap.Reload)
                 self.ammo = 6
             case State.EMOTE:
-                self.play_sound(settings.SfxMap.Emote)
+                self.sound_engine.play(settings.SfxMap.Emote)
                 emote_duration = settings.EmoteConfig.EmoteDuration
                 self.emote_duration_timer.start(emote_duration)
 
@@ -213,27 +213,6 @@ class GremlinWindow(QWidget):
 
     # --- @! Animations ------------------------------------------------------------------
 
-    def play_animation(self, sheet, current_frame, frame_count):
-        if sheet is None or frame_count == 0:
-            return current_frame
-
-        m = settings.SpriteMap
-        cols = m.SpriteColumn
-        x = (current_frame % cols) * m.FrameWidth
-        y = (current_frame // cols) * m.FrameHeight
-
-        # check bounds
-        if x + m.FrameWidth > sheet.width() or y + m.FrameHeight > sheet.height():
-            print("Warning: Animation frame out of bounds.")
-            return (current_frame + 1) % frame_count
-
-        # create the cropped pixmap
-        crop_rect = QRect(x, y, m.FrameWidth, m.FrameHeight)
-        cropped_pixmap = sheet.copy(crop_rect)
-        self.sprite_label.setPixmap(cropped_pixmap)
-
-        return (current_frame + 1) % frame_count
-
     def animation_tick(self):
         """Plays the animation for the current state."""
         c = settings.CurrentFrames
@@ -242,72 +221,64 @@ class GremlinWindow(QWidget):
 
         match self.current_state:
             case State.INTRO:
-                c.Intro = self.play_animation(
-                    sprite_manager.get(m.Intro), c.Intro, f.Intro
-                )
+                c.Intro = self.animation_engine.play_frame(m.Intro, c.Intro, f.Intro)
                 if c.Intro == 0:
                     self.set_state(State.IDLE)
 
             case State.IDLE:
-                c.Idle = self.play_animation(sprite_manager.get(m.Idle), c.Idle, f.Idle)
+                c.Idle = self.animation_engine.play_frame(m.Idle, c.Idle, f.Idle)
 
             case State.HOVER:
-                c.Hover = self.play_animation(
-                    sprite_manager.get(m.Hover), c.Hover, f.Hover
-                )
+                c.Hover = self.animation_engine.play_frame(m.Hover, c.Hover, f.Hover)
 
             case State.WALK:
                 self.handle_walking_animation_and_movement()
 
             case State.WALK_IDLE:
-                c.WalkIdle = self.play_animation(
-                    sprite_manager.get(m.WalkIdle), c.WalkIdle, f.WalkIdle
+                c.WalkIdle = self.animation_engine.play_frame(
+                    m.WalkIdle, c.WalkIdle, f.WalkIdle
                 )
 
             case State.GRAB:
-                c.Grab = self.play_animation(sprite_manager.get(m.Grab), c.Grab, f.Grab)
+                c.Grab = self.animation_engine.play_frame(m.Grab, c.Grab, f.Grab)
 
             case State.PAT:
-                c.Pat = self.play_animation(sprite_manager.get(m.Pat), c.Pat, f.Pat)
+                c.Pat = self.animation_engine.play_frame(m.Pat, c.Pat, f.Pat)
                 if c.Pat == 0:
                     # transition to Hover or Idle when "pat" animation finishes
                     self.set_state(State.HOVER if self.underMouse() else State.IDLE)
 
             case State.POKE:
-                c.Poke = self.play_animation(sprite_manager.get(m.Poke), c.Poke, f.Poke)
+                c.Poke = self.animation_engine.play_frame(m.Poke, c.Poke, f.Poke)
                 if c.Poke == 0:
                     # transition to Hover or Idle when "poke" animation finishes
                     self.set_state(State.HOVER if self.underMouse() else State.IDLE)
 
             case State.SLEEP:
-                c.Sleep = self.play_animation(
-                    sprite_manager.get(m.Sleep), c.Sleep, f.Sleep
-                )
+                c.Sleep = self.animation_engine.play_frame(m.Sleep, c.Sleep, f.Sleep)
 
             case State.EMOTE:
-                c.Emote = self.play_animation(
-                    sprite_manager.get(m.Emote), c.Emote, f.Emote
-                )
+                c.Emote = self.animation_engine.play_frame(m.Emote, c.Emote, f.Emote)
 
             case State.LEFT_ACTION:
                 if not self.has_reload or self.ammo >= 0:
-                    c.LeftAction = self.play_animation(
-                        sprite_manager.get(m.LeftAction), c.LeftAction, f.LeftAction
+                    c.LeftAction = self.animation_engine.play_frame(
+                        m.LeftAction, c.LeftAction, f.LeftAction
                     )
                 if c.LeftAction == 0:
                     self.handle_reload_check()
 
             case State.RIGHT_ACTION:
                 if not self.has_reload or self.ammo >= 0:
-                    c.RightAction = self.play_animation(
-                        sprite_manager.get(m.RightAction), c.RightAction, f.RightAction
+                    c.RightAction = self.animation_engine.play_frame(
+                        m.RightAction, c.RightAction, f.RightAction
                     )
                 if c.RightAction == 0:
                     self.handle_reload_check()
 
             case State.RELOAD:
-                c.Reload = self.play_animation(
-                    sprite_manager.get(m.Reload), c.Reload, f.Reload
+                c.Reload = self.animation_engine.play_frame(
+                    m.Reload, c.Reload, f.Reload
                 )
                 if c.Reload == 0:
                     next_state = State.HOVER if self.underMouse() else State.IDLE
@@ -328,8 +299,8 @@ class GremlinWindow(QWidget):
 
         frame_count = getattr(f, direction, 0)
         prev_frame = getattr(c, direction, 0)
-        next_frame = self.play_animation(
-            sprite_manager.get(direction_sprite), prev_frame, frame_count
+        next_frame = self.animation_engine.play_frame(
+            direction_sprite, prev_frame, frame_count
         )
         setattr(c, direction, next_frame)
 
@@ -344,32 +315,6 @@ class GremlinWindow(QWidget):
             self.set_state(State.RELOAD)
         else:
             self.set_state(State.HOVER if self.underMouse() else State.IDLE)
-
-    def play_sound(self, file_name, delay_seconds=0):
-        """Plays a sound, respecting the LastPlayed delay."""
-        path = os.path.join(
-            settings.BASE_DIR,
-            "sounds",
-            settings.Settings.StartingChar.lower(),
-            file_name,
-        )
-        if not os.path.exists(path) or os.path.isdir(path):
-            return
-
-        if delay_seconds > 0:
-            last_time = settings.Settings.LastPlayed.get(file_name)
-            if last_time:
-                if (
-                    datetime.datetime.now() - last_time
-                ).total_seconds() < delay_seconds:
-                    return
-
-        try:
-            self.sound_player.setSource(QUrl.fromLocalFile(path))
-            self.sound_player.play()
-            settings.Settings.LastPlayed[file_name] = datetime.datetime.now()
-        except Exception as e:
-            print(f"Sound error: {e}")
 
     # --- @! System Tray and App Lifecycle ---------------------------------------------------------
 
@@ -420,7 +365,7 @@ class GremlinWindow(QWidget):
         self.set_state(State.OUTRO)
 
         # here should be played the outro sound
-        self.play_sound(settings.SfxMap.Outro)
+        self.sound_engine.play(settings.SfxMap.Outro)
 
         self.close_timer = QTimer(self)
         self.close_timer.timeout.connect(self.outro_tick)
@@ -445,8 +390,8 @@ class GremlinWindow(QWidget):
 
     def outro_tick(self):
         s = settings
-        s.CurrentFrames.Outro = self.play_animation(
-            sprite_manager.get(s.SpriteMap.Outro),
+        s.CurrentFrames.Outro = self.animation_engine.play_frame(
+            s.SpriteMap.Outro,
             s.CurrentFrames.Outro,
             s.FrameCounts.Outro,
         )
@@ -589,7 +534,7 @@ class GremlinWindow(QWidget):
             State.EMOTE,
             State.OUTRO,
         ]:
-            self.play_sound(settings.SfxMap.Hover, 3)
+            self.sound_engine.play(settings.SfxMap.Hover, 3)
 
     def leaveEvent(self, event):
         self.clearFocus()
