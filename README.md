@@ -66,9 +66,13 @@ To make the gremlin's background transparent, your compositor must be configured
   Then, add the following rules into your `~/.config/hypr/hyprland.conf`:
 
   ```conf
-  windowrulev2 = noblur, title:ilgwg_desktop_gremlins.py
-  windowrulev2 = noshadow, title:ilgwg_desktop_gremlins.py
-  windowrulev2 = noborder, title:ilgwg_desktop_gremlins.py
+  windowrule {
+  name = windowrule-1
+  no_blur = on
+  no_shadow = on
+  border_size = 0
+  match:title = ilgwg_desktop_gremlins.py
+  }
   ```
 </details>
 

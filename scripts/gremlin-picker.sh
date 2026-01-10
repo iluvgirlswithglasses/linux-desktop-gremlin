@@ -1,27 +1,37 @@
 #!/bin/bash
-# an extremely simple gremlin picker using rofi
+# Universal Gremlin Picker using PySide6
 
 # move to project root directory
 SCRIPT_DIR="$(dirname $(realpath "$0"))"
 PROJECT_DIR="$(dirname "$SCRIPT_DIR")"
 cd "$PROJECT_DIR"
 
-# ensure uv can be found
+# ensure uv/local bins can be found
 export PATH=$PATH:$HOME/.local/bin
 
-# list all gremlins in spritesheet
-available_gremlins=$(command ls -1 ./spritesheet 2>/dev/null)
+# Detect Python environment
+PYTHON=""
 
-# use rofi to pick the selected gremlin
-main_menu() {
-	pick=$(echo -e "$available_gremlins\nExit" | rofi -dmenu)
+# 1. Try venv if it exists
+if [ -d "venv" ]; then
+    PYTHON="./venv/bin/python"
+# 2. Try uv if available
+elif command -v uv >/dev/null 2>&1; then
+    PYTHON="uv run python"
+# 3. Fallback to system python
+else
+    PYTHON="python3"
+fi
 
-	if [[ -z $pick || $pick == "Exit" ]]; then
-		exit 0
-	fi
+# Ensure Wayland compatibility for Qt
+if [ "${XDG_SESSION_TYPE}" = "wayland" ]; then
+    export QT_QPA_PLATFORM=xcb
+fi
 
-	# run with the unified launcher script
-	./run.sh "$pick"
-}
+# Run the picker and capture the selected gremlin name
+PICK=$($PYTHON -m src.picker 2>/dev/null)
 
-main_menu
+# If a selection was made, run the gremlin
+if [ -n "$PICK" ]; then
+    ./run.sh "$PICK"
+fi
