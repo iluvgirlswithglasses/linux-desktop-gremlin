@@ -1,12 +1,28 @@
-import sys
-import os
 import json
-from PySide6.QtWidgets import (QApplication, QWidget, QVBoxLayout, QHBoxLayout, 
-                               QListWidget, QPushButton, QLabel, QDialog, QFormLayout,
-                               QCheckBox, QSpinBox, QDoubleSpinBox, QLineEdit,
-                               QDialogButtonBox, QComboBox, QMessageBox)
-from PySide6.QtCore import Qt, QSize
-from PySide6.QtGui import QPixmap, QIcon
+import os
+import sys
+
+from PySide6.QtCore import QSize, Qt
+from PySide6.QtGui import QIcon, QPixmap
+from PySide6.QtWidgets import (
+    QApplication,
+    QCheckBox,
+    QComboBox,
+    QDialog,
+    QDialogButtonBox,
+    QDoubleSpinBox,
+    QFormLayout,
+    QHBoxLayout,
+    QLabel,
+    QLineEdit,
+    QListWidget,
+    QMessageBox,
+    QPushButton,
+    QSpinBox,
+    QVBoxLayout,
+    QWidget,
+)
+
 
 # =================================================================================
 # CLASS: SettingsDialog (Global Config)
@@ -19,11 +35,11 @@ class SettingsDialog(QDialog):
         self.project_root = project_root
         self.config_path = os.path.join(project_root, "config.json")
         self.config_data = {}
-        
+
         # UI Setup
         layout = QVBoxLayout(self)
         form_layout = QFormLayout()
-        
+
         # Load Config
         self.load_config()
 
@@ -32,21 +48,29 @@ class SettingsDialog(QDialog):
         self.populate_chars()
         if "StartingChar" in self.config_data:
             self.starting_char_combo.setCurrentText(self.config_data["StartingChar"])
-            
-        self.starting_char_combo.setToolTip("The character that spawns if you run the script without arguments.")
-            
+
+        self.starting_char_combo.setToolTip(
+            "The character that spawns if you run the script without arguments."
+        )
+
         self.systray_check = QCheckBox()
         self.systray_check.setChecked(self.config_data.get("Systray", False))
-        self.systray_check.setToolTip("Show an icon in your system tray/taskbar for easy access.")
-        
+        self.systray_check.setToolTip(
+            "Show an icon in your system tray/taskbar for easy access."
+        )
+
         self.emote_key_enabled_check = QCheckBox()
-        self.emote_key_enabled_check.setChecked(self.config_data.get("EmoteKeyEnabled", True))
-        
+        self.emote_key_enabled_check.setChecked(
+            self.config_data.get("EmoteKeyEnabled", True)
+        )
+
         self.emote_key_input = QLineEdit()
         self.emote_key_input.setMaxLength(1)
         self.emote_key_input.setText(self.config_data.get("EmoteKey", "P"))
-        self.emote_key_input.setToolTip("Press this key to make the gremlin do a special animation.")
-        
+        self.emote_key_input.setToolTip(
+            "Press this key to make the gremlin do a special animation."
+        )
+
         self.volume_spin = QDoubleSpinBox()
         self.volume_spin.setRange(0.0, 1.0)
         self.volume_spin.setSingleStep(0.1)
@@ -58,36 +82,44 @@ class SettingsDialog(QDialog):
         form_layout.addRow("Enable Emote Key:", self.emote_key_enabled_check)
         form_layout.addRow("Emote Key (e.g., P):", self.emote_key_input)
         form_layout.addRow("Volume (0.0 - 1.0):", self.volume_spin)
-        
+
         layout.addLayout(form_layout)
-        
+
         # Buttons
-        buttons = QDialogButtonBox(QDialogButtonBox.Save | QDialogButtonBox.Cancel | QDialogButtonBox.Reset)
+        buttons = QDialogButtonBox(
+            QDialogButtonBox.Save | QDialogButtonBox.Cancel | QDialogButtonBox.Reset
+        )
         buttons.accepted.connect(self.save_config)
         buttons.rejected.connect(self.reject)
         buttons.button(QDialogButtonBox.Reset).clicked.connect(self.reset_to_defaults)
-        
+
         # Custom Button Styling
         save_btn = buttons.button(QDialogButtonBox.Save)
         cancel_btn = buttons.button(QDialogButtonBox.Cancel)
         reset_btn = buttons.button(QDialogButtonBox.Reset)
-        
+
         if save_btn:
             save_btn.setText("Save")
             save_btn.setIcon(QIcon())
-            save_btn.setStyleSheet("background-color: #528bff; color: white; border: none; padding: 8px 16px; border-radius: 4px;")
+            save_btn.setStyleSheet(
+                "background-color: #528bff; color: white; border: none; padding: 8px 16px; border-radius: 4px;"
+            )
             save_btn.setCursor(Qt.PointingHandCursor)
-            
+
         if cancel_btn:
             cancel_btn.setText("Cancel")
             cancel_btn.setIcon(QIcon())
-            cancel_btn.setStyleSheet("background-color: #d32f2f; color: white; border: none; padding: 8px 16px; border-radius: 4px;")
+            cancel_btn.setStyleSheet(
+                "background-color: #d32f2f; color: white; border: none; padding: 8px 16px; border-radius: 4px;"
+            )
             cancel_btn.setCursor(Qt.PointingHandCursor)
 
         if reset_btn:
             reset_btn.setText("Reset")
             reset_btn.setIcon(QIcon())
-            reset_btn.setStyleSheet("background-color: #f0ad4e; color: white; border: none; padding: 8px 16px; border-radius: 4px;")
+            reset_btn.setStyleSheet(
+                "background-color: #f0ad4e; color: white; border: none; padding: 8px 16px; border-radius: 4px;"
+            )
             reset_btn.setCursor(Qt.PointingHandCursor)
 
         layout.addWidget(buttons)
@@ -111,16 +143,19 @@ class SettingsDialog(QDialog):
     def populate_chars(self):
         spritesheet_dir = os.path.join(self.project_root, "spritesheet")
         if os.path.exists(spritesheet_dir):
-            gremlins = sorted([
-                d for d in os.listdir(spritesheet_dir) 
-                if os.path.isdir(os.path.join(spritesheet_dir, d))
-            ])
+            gremlins = sorted(
+                [
+                    d
+                    for d in os.listdir(spritesheet_dir)
+                    if os.path.isdir(os.path.join(spritesheet_dir, d))
+                ]
+            )
             self.starting_char_combo.addItems(gremlins)
 
     def load_config(self):
         if os.path.exists(self.config_path):
             try:
-                with open(self.config_path, 'r') as f:
+                with open(self.config_path, "r") as f:
                     self.config_data = json.load(f)
             except Exception as e:
                 print(f"Error loading config: {e}")
@@ -133,7 +168,7 @@ class SettingsDialog(QDialog):
         self.emote_key_enabled_check.setChecked(True)
         self.emote_key_input.setText("P")
         self.volume_spin.setValue(0.8)
-        
+
         # Reset default character to Mambo
         index = self.starting_char_combo.findText("mambo", Qt.MatchFixedString)
         if index >= 0:
@@ -147,11 +182,12 @@ class SettingsDialog(QDialog):
         self.config_data["Volume"] = self.volume_spin.value()
 
         try:
-            with open(self.config_path, 'w') as f:
+            with open(self.config_path, "w") as f:
                 json.dump(self.config_data, f, indent=4)
             self.accept()
         except Exception as e:
             QMessageBox.critical(self, "Error", f"Failed to save config: {e}")
+
 
 # =================================================================================
 # CLASS: EmoteConfigDialog (Character Specific)
@@ -162,7 +198,9 @@ class EmoteConfigDialog(QDialog):
         self.setWindowTitle(f"Emote Config: {character_name}")
         self.setFixedSize(400, 300)
         self.character_name = character_name
-        self.config_path = os.path.join(project_root, "spritesheet", character_name, "emote-config.json")
+        self.config_path = os.path.join(
+            project_root, "spritesheet", character_name, "emote-config.json"
+        )
         self.config_data = {}
 
         layout = QVBoxLayout(self)
@@ -172,15 +210,15 @@ class EmoteConfigDialog(QDialog):
 
         self.annoy_check = QCheckBox()
         self.annoy_check.setChecked(self.config_data.get("AnnoyEmote", True))
-        
+
         self.min_trigger = QSpinBox()
-        self.min_trigger.setRange(1, 1440) 
+        self.min_trigger.setRange(1, 1440)
         self.min_trigger.setValue(self.config_data.get("MinEmoteTriggerMinutes", 5))
-        
+
         self.max_trigger = QSpinBox()
         self.max_trigger.setRange(1, 1440)
         self.max_trigger.setValue(self.config_data.get("MaxEmoteTriggerMinutes", 15))
-        
+
         self.duration = QSpinBox()
         self.duration.setRange(100, 60000)
         self.duration.setSingleStep(100)
@@ -194,7 +232,9 @@ class EmoteConfigDialog(QDialog):
         layout.addLayout(form_layout)
 
         # Buttons
-        buttons = QDialogButtonBox(QDialogButtonBox.Save | QDialogButtonBox.Cancel | QDialogButtonBox.Reset)
+        buttons = QDialogButtonBox(
+            QDialogButtonBox.Save | QDialogButtonBox.Cancel | QDialogButtonBox.Reset
+        )
         buttons.accepted.connect(self.save_config)
         buttons.rejected.connect(self.reject)
         buttons.button(QDialogButtonBox.Reset).clicked.connect(self.reset_to_defaults)
@@ -203,27 +243,33 @@ class EmoteConfigDialog(QDialog):
         save_btn = buttons.button(QDialogButtonBox.Save)
         cancel_btn = buttons.button(QDialogButtonBox.Cancel)
         reset_btn = buttons.button(QDialogButtonBox.Reset)
-        
+
         if save_btn:
             save_btn.setText("Save")
             save_btn.setIcon(QIcon())
-            save_btn.setStyleSheet("background-color: #528bff; color: white; border: none; padding: 8px 16px; border-radius: 4px;")
+            save_btn.setStyleSheet(
+                "background-color: #528bff; color: white; border: none; padding: 8px 16px; border-radius: 4px;"
+            )
             save_btn.setCursor(Qt.PointingHandCursor)
-            
+
         if cancel_btn:
             cancel_btn.setText("Cancel")
             cancel_btn.setIcon(QIcon())
-            cancel_btn.setStyleSheet("background-color: #d32f2f; color: white; border: none; padding: 8px 16px; border-radius: 4px;")
+            cancel_btn.setStyleSheet(
+                "background-color: #d32f2f; color: white; border: none; padding: 8px 16px; border-radius: 4px;"
+            )
             cancel_btn.setCursor(Qt.PointingHandCursor)
 
         if reset_btn:
             reset_btn.setText("Reset")
             reset_btn.setIcon(QIcon())
-            reset_btn.setStyleSheet("background-color: #f0ad4e; color: white; border: none; padding: 8px 16px; border-radius: 4px;")
+            reset_btn.setStyleSheet(
+                "background-color: #f0ad4e; color: white; border: none; padding: 8px 16px; border-radius: 4px;"
+            )
             reset_btn.setCursor(Qt.PointingHandCursor)
 
         layout.addWidget(buttons)
-        
+
         # Apply Stylesheet
         style = (
             "QDialog { background-color: #2b2b2b; color: white; } "
@@ -239,7 +285,7 @@ class EmoteConfigDialog(QDialog):
     def load_config(self):
         if os.path.exists(self.config_path):
             try:
-                with open(self.config_path, 'r') as f:
+                with open(self.config_path, "r") as f:
                     self.config_data = json.load(f)
             except:
                 self.config_data = {}
@@ -248,7 +294,7 @@ class EmoteConfigDialog(QDialog):
                 "AnnoyEmote": True,
                 "MinEmoteTriggerMinutes": 5,
                 "MaxEmoteTriggerMinutes": 15,
-                "EmoteDuration": 3600
+                "EmoteDuration": 3600,
             }
 
     def reset_to_defaults(self):
@@ -264,11 +310,12 @@ class EmoteConfigDialog(QDialog):
         self.config_data["EmoteDuration"] = self.duration.value()
 
         try:
-            with open(self.config_path, 'w') as f:
+            with open(self.config_path, "w") as f:
                 json.dump(self.config_data, f, indent=4)
             self.accept()
         except Exception as e:
             QMessageBox.critical(self, "Error", f"Failed to save emote config: {e}")
+
 
 # =================================================================================
 # CLASS: GremlinPicker (Main Window)
@@ -281,7 +328,7 @@ class GremlinPicker(QWidget):
         self.resize(700, 500)
         self.project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
         self.config_path = os.path.join(self.project_root, "config.json")
-        
+
         # Apply Dark Theme
         style = (
             "QWidget { background-color: #2b2b2b; color: #ffffff; font-family: 'Segoe UI', sans-serif; font-size: 14px; } "
@@ -303,11 +350,11 @@ class GremlinPicker(QWidget):
 
         # --- Left Panel: List ---
         left_layout = QVBoxLayout()
-        
+
         title_label = QLabel("Select Character")
         title_label.setObjectName("Title")
         left_layout.addWidget(title_label)
-        
+
         self.list_widget = QListWidget()
         self.list_widget.currentItemChanged.connect(self.on_selection_changed)
         self.list_widget.itemDoubleClicked.connect(self.launch_gremlin)
@@ -315,15 +362,16 @@ class GremlinPicker(QWidget):
 
         # Buttons Layout
         btn_layout = QHBoxLayout()
-        
+
         self.launch_btn = QPushButton("Spawn Gremlin")
         self.launch_btn.clicked.connect(self.launch_gremlin)
         self.launch_btn.setCursor(Qt.PointingHandCursor)
-        
+
         self.settings_btn = QPushButton("Config")
         self.settings_btn.clicked.connect(self.open_settings)
         self.settings_btn.setCursor(Qt.PointingHandCursor)
-        self.settings_btn.setStyleSheet("""
+        self.settings_btn.setStyleSheet(
+            """
             QPushButton {
                 background-color: #454545;
                 color: #cccccc;
@@ -331,17 +379,18 @@ class GremlinPicker(QWidget):
             QPushButton:hover {
                 background-color: #555555;
             }
-        """)
+        """
+        )
 
         btn_layout.addWidget(self.launch_btn, stretch=2)
         btn_layout.addWidget(self.settings_btn, stretch=1)
         left_layout.addLayout(btn_layout)
-        
+
         main_layout.addLayout(left_layout, 1)
 
         # --- Right Panel: Preview ---
         right_layout = QVBoxLayout()
-        
+
         preview_title = QLabel("Preview")
         preview_title.setObjectName("Title")
         right_layout.addWidget(preview_title)
@@ -351,15 +400,16 @@ class GremlinPicker(QWidget):
         self.preview_label.setAlignment(Qt.AlignCenter)
         self.preview_label.setMinimumSize(300, 300)
         self.preview_label.setSizePolicy(
-            self.preview_label.sizePolicy().horizontalPolicy(), 
-            self.preview_label.sizePolicy().verticalPolicy()
+            self.preview_label.sizePolicy().horizontalPolicy(),
+            self.preview_label.sizePolicy().verticalPolicy(),
         )
         right_layout.addWidget(self.preview_label)
-        
+
         self.emote_config_btn = QPushButton("Emote Config")
         self.emote_config_btn.setCursor(Qt.PointingHandCursor)
         self.emote_config_btn.clicked.connect(self.open_emote_config)
-        self.emote_config_btn.setStyleSheet("""
+        self.emote_config_btn.setStyleSheet(
+            """
             QPushButton {
                 background-color: #454545;
                 color: #cccccc;
@@ -368,9 +418,10 @@ class GremlinPicker(QWidget):
             QPushButton:hover {
                 background-color: #555555;
             }
-        """)
+        """
+        )
         right_layout.addWidget(self.emote_config_btn)
-        
+
         main_layout.addLayout(right_layout, 1)
 
         # Populate list AFTER UI is fully built
@@ -381,29 +432,32 @@ class GremlinPicker(QWidget):
         if not item:
             QMessageBox.warning(self, "Warning", "Please select a character first.")
             return
-            
+
         char_name = item.text()
         dialog = EmoteConfigDialog(char_name, self.project_root, self)
         dialog.exec()
 
     def populate_list(self):
         spritesheet_dir = os.path.join(self.project_root, "spritesheet")
-        
+
         # Load config to find default char
         default_char = ""
         if os.path.exists(self.config_path):
             try:
-                with open(self.config_path, 'r') as f:
+                with open(self.config_path, "r") as f:
                     data = json.load(f)
                     default_char = data.get("StartingChar", "")
             except:
                 pass
 
         if os.path.exists(spritesheet_dir):
-            gremlins = sorted([
-                d for d in os.listdir(spritesheet_dir) 
-                if os.path.isdir(os.path.join(spritesheet_dir, d))
-            ])
+            gremlins = sorted(
+                [
+                    d
+                    for d in os.listdir(spritesheet_dir)
+                    if os.path.isdir(os.path.join(spritesheet_dir, d))
+                ]
+            )
             for g in gremlins:
                 item = self.list_widget.addItem(g)
                 # Select if it matches default
@@ -413,36 +467,36 @@ class GremlinPicker(QWidget):
                     row = self.list_widget.count() - 1
                     self.list_widget.setCurrentRow(row)
                     self.update_preview(default_char)
-                
+
     def on_selection_changed(self, current, previous):
         if not current:
             return
-        
+
         name = current.text()
         self.update_preview(name)
 
     def update_preview(self, name):
         base_path = os.path.join(self.project_root, "spritesheet", name)
         config_path = os.path.join(base_path, "sprite-map.json")
-        
+
         if not os.path.exists(config_path):
             self.preview_label.setText("No config found")
             self.preview_label.setPixmap(QPixmap())
             return
 
         try:
-            with open(config_path, 'r') as f:
+            with open(config_path, "r") as f:
                 config = json.load(f)
-            
+
             # Get idle image and dimensions
             image_name = config.get("Idle", "")
             if not image_name:
                 # Fallback
                 image_name = config.get("WalkIdle", "")
-            
+
             if not image_name:
-                 self.preview_label.setText("No idle image defined")
-                 return
+                self.preview_label.setText("No idle image defined")
+                return
 
             image_path = os.path.join(base_path, image_name)
             if not os.path.exists(image_path):
@@ -457,20 +511,18 @@ class GremlinPicker(QWidget):
 
             frame_w = config.get("FrameWidth", 100)
             frame_h = config.get("FrameHeight", 100)
-            
+
             # Crop top-left frame
             cropped = full_pixmap.copy(0, 0, frame_w, frame_h)
-            
+
             # Scale to a fixed size to prevent the label from growing infinitely
             scaled = cropped.scaled(
-                QSize(350, 350), 
-                Qt.KeepAspectRatio, 
-                Qt.SmoothTransformation
+                QSize(350, 350), Qt.KeepAspectRatio, Qt.SmoothTransformation
             )
-            
+
             self.preview_label.setPixmap(scaled)
-            self.preview_label.setText("") # Clear text
-            
+            self.preview_label.setText("")  # Clear text
+
         except Exception as e:
             print(f"Preview error: {e}")
             self.preview_label.setText("Preview Error")
@@ -484,6 +536,7 @@ class GremlinPicker(QWidget):
     def open_settings(self):
         dialog = SettingsDialog(self.project_root, self)
         dialog.exec()
+
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)

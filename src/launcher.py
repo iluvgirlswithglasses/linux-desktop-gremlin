@@ -6,20 +6,24 @@ Handles environment detection and Qt platform configuration.
 
 import sys
 
+
 def main():
     """Main entry point that sets up environment and launches the application."""
     from PySide6.QtWidgets import QApplication
+
     from . import config_manager
     from .gremlin import GremlinWindow
 
     app = QApplication(sys.argv)
 
     try:
-        state = (config_manager.load_master_config(sys.argv) and
-                 config_manager.load_sfx_map() and
-                 config_manager.load_sprite_map() and
-                 config_manager.load_frame_count() and
-                 config_manager.load_emote_config())
+        state = (
+            config_manager.load_master_config(sys.argv)
+            and config_manager.load_sfx_map()
+            and config_manager.load_sprite_map()
+            and config_manager.load_frame_count()
+            and config_manager.load_emote_config()
+        )
         if not state:
             print("Fatal Error: Corrupted configuration. Quitting...")
             sys.exit(1)

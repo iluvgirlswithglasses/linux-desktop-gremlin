@@ -1,13 +1,13 @@
-
-import os
 import json
+import os
+
 from . import settings
 
 
 def load(path, instance) -> bool:
-    """ Generic config loader. """
+    """Generic config loader."""
     # load json into instance
-    with open(path, 'r') as f:
+    with open(path, "r") as f:
         data = json.load(f)
         for key, val in data.items():
             if hasattr(instance, key):
@@ -24,7 +24,7 @@ def load(path, instance) -> bool:
 
 
 def load_master_config(argv) -> bool:
-    """ Loads the master config from `./config.json` and from command line args. """
+    """Loads the master config from `./config.json` and from command line args."""
     # load from file first
     path = os.path.join(settings.BASE_DIR, "config.json")
     if not os.path.exists(path):
@@ -42,10 +42,12 @@ def load_master_config(argv) -> bool:
 
 
 def load_sfx_map() -> bool:
-    """ Loads the sound effects map config. """
+    """Loads the sound effects map config."""
     path = os.path.join(
         settings.BASE_DIR,
-        "sounds", settings.Settings.StartingChar.lower(), "sfx-map.json"
+        "sounds",
+        settings.Settings.StartingChar.lower(),
+        "sfx-map.json",
     )
     if not os.path.exists(path):
         print(f"Warning: SFX map file not found at {path}")
@@ -54,10 +56,12 @@ def load_sfx_map() -> bool:
 
 
 def load_sprite_map() -> bool:
-    """ Loads the sprite map config. """
+    """Loads the sprite map config."""
     path = os.path.join(
         settings.BASE_DIR,
-        "spritesheet", settings.Settings.StartingChar.lower(), "sprite-map.json"
+        "spritesheet",
+        settings.Settings.StartingChar.lower(),
+        "sprite-map.json",
     )
     if not os.path.exists(path):
         print(f"Warning: Sprite map file not found at {path}")
@@ -66,10 +70,12 @@ def load_sprite_map() -> bool:
 
 
 def load_frame_count() -> bool:
-    """ Loads frame count config for a character. """
+    """Loads frame count config for a character."""
     path = os.path.join(
         settings.BASE_DIR,
-        "spritesheet", settings.Settings.StartingChar.lower(), "frame-count.json"
+        "spritesheet",
+        settings.Settings.StartingChar.lower(),
+        "frame-count.json",
     )
     if not os.path.exists(path):
         print(f"Warning: Character config file not found at {path}")
@@ -78,10 +84,12 @@ def load_frame_count() -> bool:
 
 
 def load_emote_config() -> bool:
-    """ Loads the emote config. """
+    """Loads the emote config."""
     path = os.path.join(
         settings.BASE_DIR,
-        "spritesheet", settings.Settings.StartingChar.lower(), "emote-config.json"
+        "spritesheet",
+        settings.Settings.StartingChar.lower(),
+        "emote-config.json",
     )
     if not os.path.exists(path):
         print(f"Warning: Emote config file not found at {path}")

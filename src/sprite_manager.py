@@ -1,14 +1,14 @@
-
 import os
+
 from PySide6.QtGui import QPixmap
+
 from . import settings
-from .settings import SpriteMap
 
 CACHE = {}
 
 
 def get(filename: str):
-    """ Gets a QPixmap from the cache or loads it from disk. """
+    """Gets a QPixmap from the cache or loads it from disk."""
     # check cache first
     if filename in CACHE:
         return CACHE[filename]
@@ -21,11 +21,8 @@ def get(filename: str):
 
 
 def load_sprite(file_folder, file_name):
-    """ Loads a sprite from disk into a QPixmap. """
-    path = os.path.join(
-        settings.BASE_DIR,
-        "spritesheet", file_folder, file_name
-    )
+    """Loads a sprite from disk into a QPixmap."""
+    path = os.path.join(settings.BASE_DIR, "spritesheet", file_folder, file_name)
     if not os.path.exists(path):
         print(f"Warning: Sprite file not found at {path}")
         return None

@@ -1,9 +1,7 @@
-
-from enum import Enum, auto
-import os
 import datetime
+import os
+from enum import Enum, auto
 from typing import Dict
-from PySide6.QtCore import Qt
 
 # Point to project root (parent of src/)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -14,6 +12,7 @@ class State(Enum):
     Defines the possible states of the gremlin.
     At any given time, the gremlin can only be in one state.
     """
+
     IDLE = auto()
     HOVER = auto()
     SLEEP = auto()

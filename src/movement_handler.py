@@ -1,7 +1,8 @@
+import string
+import sys
 
 from PySide6.QtCore import Qt
-import sys
-import string
+
 from . import settings
 
 
@@ -74,22 +75,29 @@ class MovementHandler:
         try:
             # forces single character key
             if not isinstance(key, str) or len(key) != 1:
-                print(f"\n[Warning] EmoteKey invalid or not a single char ({key!r}); using default 'P'")
+                print(
+                    f"\n[Warning] EmoteKey invalid or not a single char ({key!r}); using default 'P'"
+                )
                 self.emote_key_code = self.default_emotekey
                 return
 
             # limits to qwerty alphanumerical chars and digits 0-9
             char = key.strip().upper()
             if char not in string.ascii_uppercase + string.digits:
-                print(f"\n[Warning] EmoteKey {key!r} not allowed (allowed: A-Z, 0-9); using default 'P'")
+                print(
+                    f"\n[Warning] EmoteKey {key!r} not allowed (allowed: A-Z, 0-9); using default 'P'"
+                )
                 self.emote_key_code = self.default_emotekey
                 return
 
             self.emote_key_code = ord(char)
         except Exception as e:
-            print(f"[Error] Failed to resolve EmoteKey from settings: {e!r}.", file=sys.stderr)
+            print(
+                f"[Error] Failed to resolve EmoteKey from settings: {e!r}.",
+                file=sys.stderr,
+            )
             self.emote_key_code = self.default_emotekey
-    
+
     def is_emotekey_pressed(self) -> bool:
         return self.emotekey
 
@@ -108,7 +116,7 @@ class MovementHandler:
                 self.d = True
             case _:
                 pass
-        
+
         # handles the emote keypress
         if self.emote_key_code is not None and key == self.emote_key_code:
             self.emotekey = True
@@ -126,7 +134,7 @@ class MovementHandler:
                 self.d = False
             case _:
                 pass
-        
+
         if self.emote_key_code is not None and key == self.emote_key_code:
             self.emotekey = False
 
