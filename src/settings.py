@@ -40,6 +40,7 @@ class Settings:
     MoveSpeed = 5
     EmoteKeyEnabled = True
     EmoteKey = "P"
+    AudioDevice = "Default"
     Volume = 0.8
 
 

@@ -7,6 +7,7 @@ from PySide6.QtWidgets import (QApplication, QWidget, QVBoxLayout, QHBoxLayout,
                                QDialogButtonBox, QComboBox, QMessageBox)
 from PySide6.QtCore import Qt, QSize
 from PySide6.QtGui import QPixmap, QIcon
+from PySide6.QtMultimedia import QMediaDevices, QAudioDevice
 
 # =================================================================================
 # CLASS: SettingsDialog (Global Config)
@@ -47,6 +48,19 @@ class SettingsDialog(QDialog):
         self.emote_key_input.setText(self.config_data.get("EmoteKey", "P"))
         self.emote_key_input.setToolTip("Press this key to make the gremlin do a special animation.")
         
+        # Audio Device Selector
+        self.audio_device_combo = QComboBox()
+        self.audio_device_combo.addItem("Default")
+        self.audio_outputs = QMediaDevices.audioOutputs()
+        for device in self.audio_outputs:
+            self.audio_device_combo.addItem(device.description())
+            
+        current_device = self.config_data.get("AudioDevice", "Default")
+        index = self.audio_device_combo.findText(current_device)
+        if index >= 0:
+            self.audio_device_combo.setCurrentIndex(index)
+        self.audio_device_combo.setToolTip("Select the audio output device for the gremlin's sound effects.")
+
         self.volume_spin = QDoubleSpinBox()
         self.volume_spin.setRange(0.0, 1.0)
         self.volume_spin.setSingleStep(0.1)
@@ -57,6 +71,7 @@ class SettingsDialog(QDialog):
         form_layout.addRow("Enable System Tray:", self.systray_check)
         form_layout.addRow("Enable Emote Key:", self.emote_key_enabled_check)
         form_layout.addRow("Emote Key (e.g., P):", self.emote_key_input)
+        form_layout.addRow("Audio Output:", self.audio_device_combo)
         form_layout.addRow("Volume (0.0 - 1.0):", self.volume_spin)
         
         layout.addLayout(form_layout)
@@ -132,6 +147,7 @@ class SettingsDialog(QDialog):
         self.systray_check.setChecked(False)
         self.emote_key_enabled_check.setChecked(True)
         self.emote_key_input.setText("P")
+        self.audio_device_combo.setCurrentIndex(0) # Default
         self.volume_spin.setValue(0.8)
         
         # Reset default character to Mambo
@@ -144,6 +160,7 @@ class SettingsDialog(QDialog):
         self.config_data["Systray"] = self.systray_check.isChecked()
         self.config_data["EmoteKeyEnabled"] = self.emote_key_enabled_check.isChecked()
         self.config_data["EmoteKey"] = self.emote_key_input.text().upper()
+        self.config_data["AudioDevice"] = self.audio_device_combo.currentText()
         self.config_data["Volume"] = self.volume_spin.value()
 
         try:
