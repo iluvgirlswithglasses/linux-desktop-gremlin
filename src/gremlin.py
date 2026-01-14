@@ -8,7 +8,7 @@ from PySide6.QtWidgets import (
 )
 from PySide6.QtCore import Qt, QTimer, QRect, QUrl
 from PySide6.QtGui import QIcon, QAction
-from PySide6.QtMultimedia import QSoundEffect
+from PySide6.QtMultimedia import QMediaPlayer, QMediaDevices, QAudioOutput
 
 from . import settings
 from . import sprite_manager
@@ -66,8 +66,22 @@ class GremlinWindow(QWidget):
             self.ammo = 6
 
         # --- @! Sound Player ------------------------------------------------------------
-        self.sound_player = QSoundEffect(self)
-        self.sound_player.setVolume(settings.Settings.Volume)
+        # Using QMediaPlayer + QAudioOutput to allow selecting a specific audio device.
+        self.audio_output = QAudioOutput(self)
+        self.sound_player = QMediaPlayer(self)
+        self.sound_player.setAudioOutput(self.audio_output)
+        
+        # Configure Audio Output Device
+        target_device = settings.Settings.AudioDevice
+        if target_device and target_device != "Default":
+            for device in QMediaDevices.audioOutputs():
+                if device.description() == target_device:
+                    self.audio_output.setDevice(device)
+                    print(f"Audio Output set to: {target_device}")
+                    break
+
+        # Set Volume (QMediaPlayer controls volume via QAudioOutput in Qt6)
+        self.audio_output.setVolume(settings.Settings.Volume)
 
         # --- @! Timers ------------------------------------------------------------------
         self.master_timer = QTimer(self)

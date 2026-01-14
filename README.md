@@ -67,7 +67,7 @@ To make the gremlin's background transparent, your compositor must be configured
 
   ```conf
   windowrule {
-  name = windowrule-1
+  name = linux-gremlin
   no_blur = on
   no_shadow = on
   border_size = 0
@@ -112,11 +112,17 @@ It is recommended that you check the content of the script before running.
 
 ## 3. Run Desktop Gremins!
 
-If you have [rofi](https://github.com/davatorium/rofi) installed, you can use it to find and run Desktop Gremlin.
+Once installed, you can find **Gremlin Picker** in your application menu (or app launcher like Rofi/Wofi/Fuzzel). Just search for "Gremlin" and launch it!
 
-<img width="960" height="720" alt="tmp_3" src="https://github.com/user-attachments/assets/45b2cffa-2914-4e25-b8d2-de07432c008e" />
+Alternatively, you can run the picker from the terminal:
 
-Otherwise, you can navigate to `~/.config/linux-desktop-gremlin/` and execute the run script, then a gremlin shall be spawned:
+```sh
+./scripts/gremlin-picker.sh
+```
+
+![App Launcher](images/ss-app_launcher.png)
+
+Otherwise, you can navigate to `~/.config/linux-desktop-gremlin/` and execute the run script directly:
 
 ```sh
 ./run.sh                    # to spawn the default character (specified in ./config.json)
@@ -167,7 +173,7 @@ Execute one of these run scripts, then a gremlin shall be spawned:
 ```sh
 ./run.sh                    # to spawn the default character (specified in ./config.json)
 ./run.sh <character-name>   # to spawn any character who is available in ./spritesheet/
-./scripts/gremlin-picker.sh # if you want to use a GUI picker (you need rofi installed)
+./scripts/gremlin-picker.sh # to use the visual picker GUI
 
 # You can now close the terminal which you executed these scripts with.
 # The gremlin won't be despawned unless you use your hotkeys for closing window,
