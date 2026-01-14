@@ -127,6 +127,7 @@ Otherwise, you can navigate to `~/.config/linux-desktop-gremlin/` and execute th
 ```sh
 ./run.sh                    # to spawn the default character (specified in ./config.json)
 ./run.sh <character-name>   # to spawn any character who is available in ./spritesheet/
+./run.sh Random             # to spawn a random character available in ./spritesheet/
 
 # You can now close the terminal which you executed these scripts with.
 # The gremlin won't be despawned unless you use your hotkeys for closing window,
