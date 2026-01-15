@@ -1,8 +1,11 @@
 {
     "StartingChar": "Mambo",
     "Systray": false,
-    "FollowRadius": 150.0,
+    "MoveSpeed": 5,
+    "Volume": 0.8,
+    "AudioDevice": "Default",
     "EmoteKeyEnabled": true,
     "EmoteKey": "P",
-    "Volume": 0.8
+    "IdleMinutes": 5,
+    "SleepMinutes": 5
 }
