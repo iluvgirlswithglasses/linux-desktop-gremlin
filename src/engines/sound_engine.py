@@ -1,7 +1,7 @@
 import datetime
 
 from PySide6.QtCore import QUrl
-from PySide6.QtMultimedia import QSoundEffect
+from PySide6.QtMultimedia import QAudioOutput, QMediaDevices, QMediaPlayer
 from PySide6.QtWidgets import QWidget
 
 from ..resources import ResourceRegistry
@@ -11,8 +11,22 @@ from ..states import State
 
 class SoundEngine:
     def __init__(self, window: QWidget):
-        self.player = QSoundEffect(window)
-        self.player.setVolume(Preferences.Volume)
+        # We use QMediaPlayer + QAudioOutput to allow selecting a specific audio device.
+        self.audio_output = QAudioOutput(window)
+        self.player = QMediaPlayer(window)
+        self.player.setAudioOutput(self.audio_output)
+
+        # Configure Audio Output Device
+        target_device = Preferences.AudioDevice
+        if target_device and target_device != "Default":
+            for device in QMediaDevices.audioOutputs():
+                if device.description() == target_device:
+                    self.audio_output.setDevice(device)
+                    print(f"Audio Output set to: {target_device}")
+                    break
+
+        # Set Volume
+        self.audio_output.setVolume(Preferences.Volume)
 
     def play(self, state: State, delay_seconds=0):
         # get sound data if exists
