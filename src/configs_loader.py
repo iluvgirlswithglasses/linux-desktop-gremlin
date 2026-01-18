@@ -167,6 +167,11 @@ def _load_sprite_resource(char: str, sprite_config: dict, frame_config: dict):
     def register(state: State):
         state_key = to_pascal_case(state)
         sprite_name = sprite_config[state_key]
+        
+        # Skip if sprite name is empty (e.g. character missing optional animations)
+        if not sprite_name:
+            return
+
         sprite_path = _get_char_file(char, ResourceType.SPRITESHEET, sprite_name)
         sprite_frames = frame_config[state_key]
         ResourceRegistry.animations[(state, Direction.NONE)] = AnimationData(
@@ -187,6 +192,10 @@ def _load_sprite_resource(char: str, sprite_config: dict, frame_config: dict):
                 continue
             key = to_pascal_case(direction)
             sprite_name = sprite_config[key]
+            
+            if not sprite_name:
+                continue
+
             sprite_path = _get_char_file(char, ResourceType.SPRITESHEET, sprite_name)
             sprite_frames = frame_config[key]
             ResourceRegistry.animations[(State.WALK, direction)] = AnimationData(
