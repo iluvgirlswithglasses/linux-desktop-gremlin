@@ -17,6 +17,7 @@ GREMLIN_DIRS = [
     Path(BASE_DIR) / "gremlins",
 ]
 
+
 def load_resources_and_preferences(char: str | None = None):
     """
     Reads configuration from ./config.json, spritesheet/<char>/*.json, sounds/<char>/*.json
@@ -79,7 +80,7 @@ def _resolve_char_path(char_name: str) -> tuple[Path, bool]:
 
 def _get_char_file(char_name: str, resource: ResourceType, file_name: str) -> str:
     root_path, is_bundled = _resolve_char_path(char_name)
-    
+
     if is_bundled:
         # Bundled Format:
         # root/sprites/file.png
@@ -94,7 +95,7 @@ def _get_char_file(char_name: str, resource: ResourceType, file_name: str) -> st
 
     if not ans.exists() or not ans.is_file():
         raise FileNotFoundError(f"Missing required file: {ans}")
-        
+
     return str(ans)
 
 
@@ -205,7 +206,7 @@ def _load_sprite_resource(char: str, sprite_config: dict, frame_config: dict):
     def register(state: State):
         state_key = to_pascal_case(state)
         sprite_name = sprite_config[state_key]
-        
+
         # Skip if sprite name is empty (e.g. character missing optional animations)
         if not sprite_name:
             return
@@ -230,7 +231,7 @@ def _load_sprite_resource(char: str, sprite_config: dict, frame_config: dict):
                 continue
             key = to_pascal_case(direction)
             sprite_name = sprite_config[key]
-            
+
             if not sprite_name:
                 continue
 
