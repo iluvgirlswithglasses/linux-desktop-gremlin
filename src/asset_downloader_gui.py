@@ -1,9 +1,11 @@
 import json
+import os
 import sys
 from pathlib import Path
-from typing import Dict
+from typing import Dict, TypedDict
 
 from PySide6.QtCore import Qt, QThread, Signal
+from PySide6.QtGui import QColor
 from PySide6.QtWidgets import (
     QApplication,
     QDialog,
@@ -17,12 +19,29 @@ from PySide6.QtWidgets import (
 )
 
 from .asset_downloader import download_asset
-from .configs_loader import BASE_DIR
+from .configs_loader import BASE_DIR, GREMLIN_DIRS
 
 
 def load_asset_list() -> Dict[str, str]:
-    with open("upstream-assets.json", "r") as f:
+    path = Path(BASE_DIR) / "upstream-assets.json"
+    with open(path, "r") as f:
         return json.load(f)
+
+
+def resolve_asset_dir() -> Path:
+    for dir in GREMLIN_DIRS:
+        if dir.exists():
+            return dir
+
+    suggested_path = Path(BASE_DIR) / "gremlins"
+    os.makedirs(suggested_path, exist_ok=True)
+    return suggested_path
+
+
+class AssetItem(TypedDict):
+    name: str
+    url: str
+    installed: bool
 
 
 class DownloadWorker(QThread):
@@ -48,40 +67,41 @@ class AssetDownloaderGui(QDialog):
         self.setMinimumSize(450, 500)
 
         self.assets_data = load_asset_list()
-        self.data_bucket = 69420  # Unique role for storing data in QListWidgetItem
+        self.data_bucket = 69420  # unique role for storing data in QListWidgetItem
 
         self.init_ui()
 
     def init_ui(self):
-        layout = QVBoxLayout(self)
-
-        self.info_label = QLabel("Double click to download:")
-        self.info_label.setStyleSheet("color: #dddddd; font-weight: bold;")
-        layout.addWidget(self.info_label)
-
+        # ---- populate the layout -------------------------------------------------------
+        self.info_label = QLabel()
         self.list_widget = QListWidget()
+        self._to_standby_state()
+
+        layout = QVBoxLayout(self)
+        layout.addWidget(self.info_label)
         layout.addWidget(self.list_widget)
 
-        # Bottom Buttons
-        btn_layout = QHBoxLayout()
+        # ---- make a simple button, in case people don't want to Mod+Q ------------------
         self.close_btn = QPushButton("Close")
         self.close_btn.clicked.connect(self.reject)
-
-        # Apply your picker style to the close button
         self.close_btn.setStyleSheet(
-            "background-color: #454545; color: #cccccc; padding: 8px;"
+            # matches the save button of ./picker.py
+            "background-color: #528bff; color: white; border: none; padding: 8px 16px; border-radius: 4px;"
         )
 
+        btn_layout = QHBoxLayout()
         btn_layout.addStretch()
         btn_layout.addWidget(self.close_btn)
         layout.addLayout(btn_layout)
 
-        # Setup Styling (matching picker.py)
+        # ---- set global stylesheet (matches picker.py) ---------------------------------
         self.setStyleSheet(
             """
-            QDialog { background-color: #2b2b2b; }
-            QListWidget { background-color: #363636; border: 1px solid #454545; border-radius: 8px; color: white; }
+            QDialog { background-color: #2b2b2b; color: white; }
+            QLabel { color: #dddddd; font-size: 14px; }
+            QListWidget { background-color: #363636; border: 1px solid #454545; border-radius: 8px; color: white; outline: none; }
             QListWidget::item { padding: 10px; border-bottom: 1px solid #404040; }
+            QListWidget::item:hover { background-color: #404040; }
             QListWidget::item:selected { background-color: #528bff; }
             QPushButton { border-radius: 4px; font-weight: bold; }
         """
@@ -90,50 +110,62 @@ class AssetDownloaderGui(QDialog):
         self.refresh_list()
         self.list_widget.itemDoubleClicked.connect(self.start_download)
 
-    def is_installed(self, asset_name):
+    def is_installed(self, asset_name: str) -> bool:
         """Checks if the asset exists in the gremlins folder."""
-        # Check standard gremlins directory
-        target_path = Path(BASE_DIR) / "gremlins" / asset_name
+        target_path = resolve_asset_dir() / asset_name
         return target_path.exists() and target_path.is_dir()
 
     def refresh_list(self):
         self.list_widget.clear()
+
+        # ---- fetch items ---------------------------------------------------------------
+        items = []
         for name, url in self.assets_data.items():
-            installed = self.is_installed(name)
+            items.append(
+                AssetItem(name=name, url=url, installed=self.is_installed(name))
+            )
+        items.sort(key=lambda x: (x["installed"], x["name"]))
 
-            display_text = f"{name} {'(Installed)' if installed else ''}"
-            item = QListWidgetItem(display_text)
-            item.setData(self.data_bucket, (name, url))
-
+        # ---- populate list -------------------------------------------------------------
+        for item in items:
+            installed = item["installed"]
             if installed:
-                item.setFlags(
-                    item.flags() & ~Qt.ItemFlag.ItemIsEnabled
-                )  # Disable clicking installed ones
+                item = QListWidgetItem(f"(installed) {item['name']}")
+                item.setForeground(QColor("#888888"))
+            else:
+                item = QListWidgetItem(item["name"])
+            item.setData(self.data_bucket, item)
+
+            # disable clicking on installed assets
+            if installed:
+                item.setFlags(item.flags() & ~Qt.ItemFlag.ItemIsEnabled)
 
             self.list_widget.addItem(item)
 
-    def start_download(self, item):
-        asset_name, url = item.data(self.data_bucket)
-        print(asset_name, url)
+    def start_download(self, item: QListWidgetItem):
+        asset_info: AssetItem = item.data(self.data_bucket)
+        name = asset_info["name"]
+        url = asset_info["url"]
 
-        self.info_label.setText(f"Downloading {asset_name}...")
-        self.list_widget.setEnabled(False)
-
-        self.worker = DownloadWorker(asset_name, url)
+        self._to_download_state(name)
+        self.worker = DownloadWorker(name, url)
         self.worker.finished.connect(self.on_finished)
         self.worker.start()
 
-    def on_finished(self, success, message):
-        self.list_widget.setEnabled(True)
-        self.info_label.setText("Double click to download:")
-
+    def on_finished(self, success: bool, message: str):
+        self._to_standby_state()
         if success:
-            QMessageBox.information(
-                self, "Download Complete", "Gremlin installed successfully!"
-            )
             self.refresh_list()
         else:
             QMessageBox.critical(self, "Error", f"Failed to download: {message}")
+
+    def _to_download_state(self, asset_name: str):
+        self.info_label.setText(f"Downloading {asset_name}...")
+        self.list_widget.setEnabled(False)
+
+    def _to_standby_state(self):
+        self.info_label.setText("Double click to download:")
+        self.list_widget.setEnabled(True)
 
 
 if __name__ == "__main__":
