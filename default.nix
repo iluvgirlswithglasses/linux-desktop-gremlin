@@ -73,8 +73,7 @@ python3Packages.buildPythonApplication {
   postInstall = ''
     mkdir -p $out/share/linux-desktop-gremlin/{src,scripts}
     cp -r $src/src/* $out/share/linux-desktop-gremlin/src/
-    cp -r $src/spritesheet $out/share/linux-desktop-gremlin/spritesheet
-    cp -r $src/sounds $out/share/linux-desktop-gremlin/sounds
+    cp -r $src/gremlins $out/share/linux-desktop-gremlin/gremlins
 
     install -Dm644 $src/config.json $out/share/linux-desktop-gremlin/config.json
     jq '.Systray = true' $src/config.json > $out/share/linux-desktop-gremlin/config.json # enable tray
