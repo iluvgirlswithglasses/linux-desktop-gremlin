@@ -30,60 +30,6 @@ uv sync
 
 
 # ========================================================================================
-# Installation Variables
+# Create desktop files and symlinks
 # ========================================================================================
-INSTALL_PATH="$HOME/.config/linux-desktop-gremlin"
-BIN_PATH="$HOME/.local/bin"
-ICON_PATH="$INSTALL_PATH/icon.png"
-
-PICKER_LINK_PATH="$BIN_PATH/gremlin-picker"
-PICKER_DESKTOP_FILE="$HOME/.local/share/applications/gremlin_picker.desktop"
-
-DOWNLOADER_LINK_PATH="$BIN_PATH/gremlin-downloader"
-DOWNLOADER_DESKTOP_FILE="$HOME/.local/share/applications/gremlin_downloader.desktop"
-
-
-# ========================================================================================
-# Install Gremlin Picker
-# ========================================================================================
-echo "→ Installing Linux Desktop Gremlin..."
-mkdir -p "$INSTALL_PATH" "$BIN_PATH" "$(dirname "$PICKER_DESKTOP_FILE")"
-ln -sf "$INSTALL_PATH/scripts/gremlin-picker.sh" "$PICKER_LINK_PATH"
-chmod +x "$PICKER_LINK_PATH"
-
-cat >"$PICKER_DESKTOP_FILE" <<EOF
-[Desktop Entry]
-Name=Gremlin Picker
-Comment=Pick your favorite gremlin
-Exec=$PICKER_LINK_PATH
-Icon=$ICON_PATH
-Terminal=false
-Type=Application
-Categories=Utility;
-EOF
-
-chmod 644 "$PICKER_DESKTOP_FILE"
-
-
-# ========================================================================================
-# Install Gremlin Downloader
-# ========================================================================================
-echo "→ Installing Gremlin Downloader..."
-mkdir -p "$(dirname "$DOWNLOADER_DESKTOP_FILE")"
-ln -sf "$INSTALL_PATH/scripts/gremlin-downloader.sh" "$DOWNLOADER_LINK_PATH"
-chmod +x "$DOWNLOADER_LINK_PATH"
-
-cat >"$DOWNLOADER_DESKTOP_FILE" <<EOF
-[Desktop Entry]
-Name=Gremlin Downloader
-Comment=Download some gremlins
-Exec=$DOWNLOADER_LINK_PATH
-Icon=$ICON_PATH
-Terminal=false
-Type=Application
-Categories=Utility;
-EOF
-
-chmod 644 "$DOWNLOADER_DESKTOP_FILE"
-
-echo "Installed successfully! :3"
+bash ./scripts/make-desktop-files.sh
