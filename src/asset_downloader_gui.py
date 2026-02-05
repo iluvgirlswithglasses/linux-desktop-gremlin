@@ -130,22 +130,22 @@ class AssetDownloaderGui(QDialog):
         for item in items:
             installed = item["installed"]
             if installed:
-                item = QListWidgetItem(f"(installed) {item['name']}")
-                item.setForeground(QColor("#888888"))
+                list_item = QListWidgetItem(f"(installed) {item['name']}")
+                list_item.setForeground(QColor("#888888"))
             else:
-                item = QListWidgetItem(item["name"])
-            item.setData(self.data_bucket, item)
+                list_item = QListWidgetItem(item["name"])
+            list_item.setData(self.data_bucket, item)
 
             # disable clicking on installed assets
             if installed:
-                item.setFlags(item.flags() & ~Qt.ItemFlag.ItemIsEnabled)
+                list_item.setFlags(list_item.flags() & ~Qt.ItemFlag.ItemIsEnabled)
 
-            self.list_widget.addItem(item)
+            self.list_widget.addItem(list_item)
 
-    def start_download(self, item: QListWidgetItem):
-        asset_info: AssetItem = item.data(self.data_bucket)
-        name = asset_info["name"]
-        url = asset_info["url"]
+    def start_download(self, list_item: QListWidgetItem):
+        item: AssetItem = list_item.data(self.data_bucket)
+        name = item["name"]
+        url = item["url"]
 
         self._to_download_state(name)
         self.worker = DownloadWorker(name, url)
