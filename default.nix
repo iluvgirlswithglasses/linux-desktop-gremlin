@@ -71,9 +71,8 @@ python3Packages.buildPythonApplication {
     ];
 
   postInstall = ''
-    mkdir -p $out/share/linux-desktop-gremlin/{src,scripts}
+    mkdir -p $out/share/linux-desktop-gremlin/{src,scripts,gremlins}
     cp -r $src/src/* $out/share/linux-desktop-gremlin/src/
-    cp -r $src/gremlins $out/share/linux-desktop-gremlin/gremlins
 
     install -Dm644 $src/config.json $out/share/linux-desktop-gremlin/config.json
     jq '.Systray = true' $src/config.json > $out/share/linux-desktop-gremlin/config.json # enable tray
@@ -81,6 +80,8 @@ python3Packages.buildPythonApplication {
     install -Dm755 $src/scripts/gremlin-picker.sh $out/share/linux-desktop-gremlin/scripts/gremlin-picker.sh
     sed -i "s|./run.sh \"\$pick\"|$out/bin/linux-desktop-gremlin \"\$pick\"|" \
       $out/share/linux-desktop-gremlin/scripts/gremlin-picker.sh
+
+    install -Dm755 $src/scripts/gremlin-downloader.sh $out/share/linux-desktop-gremlin/scripts/gremlin-downloader.sh
 
     install -Dm644 $src/icon.png $out/share/icons/hicolor/256x256/apps/linux-desktop-gremlin.png
   '';
