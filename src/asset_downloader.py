@@ -2,7 +2,9 @@
 Downloads a gremlin asset zip from a URL then extracts.
 """
 
+import json
 import os
+import sys
 import zipfile
 from pathlib import Path
 
@@ -38,3 +40,28 @@ def download_asset(url: str):
     raise FileNotFoundError(
         f"There's no where to extract the asset. Please make a directory at: '{suggested_dir}'."
     )
+
+
+if __name__ == "__main__":
+    # argument checking is done by ../scripts/gremlin-downloader-cli.sh
+    if len(sys.argv) != 2:
+        sys.exit(1)
+
+    # loads the asset list from ./upstream-assets.json
+    asset_list_path = os.path.join(BASE_DIR, "upstream-assets.json")
+    with open(asset_list_path, "r") as f:
+        asset_list = json.load(f)
+
+    # checks if the target asset is in the asset list
+    target = sys.argv[1]
+    if target not in asset_list:
+        print(f"'{target}' is not a key in './upstream-assets.json'")
+        sys.exit(1)
+
+    # proceeds
+    try:
+        download_asset(asset_list[target])
+        print(f"'{target}' is installed successfully!")
+    except Exception as e:
+        print(f"Failed to install '{target}': {e}")
+        sys.exit(1)
