@@ -44,7 +44,7 @@ def download_asset(url: str):
 
 if __name__ == "__main__":
     # argument checking is done by ../scripts/gremlin-downloader-cli.sh
-    if len(sys.argv) != 2:
+    if len(sys.argv) < 2:
         sys.exit(1)
 
     # loads the asset list from ./upstream-assets.json
@@ -52,16 +52,18 @@ if __name__ == "__main__":
     with open(asset_list_path, "r") as f:
         asset_list = json.load(f)
 
-    # checks if the target asset is in the asset list
-    target = sys.argv[1]
-    if target not in asset_list:
-        print(f"'{target}' is not a key in './upstream-assets.json'")
-        sys.exit(1)
-
     # proceeds
-    try:
-        download_asset(asset_list[target])
-        print(f"'{target}' is installed successfully!")
-    except Exception as e:
-        print(f"Failed to install '{target}': {e}")
-        sys.exit(1)
+    ls = sys.argv[1:]
+    for gremlin in ls:
+        try:
+            # checks if the gremlin is in the asset list
+            if gremlin not in asset_list:
+                print(f"'{gremlin}' is not a key in './upstream-assets.json'")
+                continue
+
+            # downloads and extracts the asset
+            print(f"Installing '{gremlin}'...")
+            download_asset(asset_list[gremlin])
+            print(f"\t->'{gremlin}' is installed successfully!")
+        except Exception as e:
+            print(f"Failed to install '{gremlin}': {e}")

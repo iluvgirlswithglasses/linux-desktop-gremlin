@@ -7,10 +7,10 @@ PROJECT_DIR="$(dirname "$SCRIPT_DIR")"
 cd "$PROJECT_DIR"
 
 # ---- check if the script is called with 1 argument -----------------
-if [ "$#" -ne 1 ]; then
+if [ "$#" -lt 1 ]; then
     SCRIPT_NAME="$(basename "$0")"
-    echo "Usage:    $SCRIPT_NAME <gremlin-name>"
-    echo "Example:  $SCRIPT_NAME hikari"
+    echo "Usage:    $SCRIPT_NAME <gremlin-name-1> [<gremlin-name-2> ...]"
+    echo "Example:  $SCRIPT_NAME mambo hikari"
     echo ""
     echo "You can check for available gremlin names in:"
     echo "$PROJECT_DIR/upstream-assets.json"
