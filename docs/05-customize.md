@@ -1,13 +1,13 @@
 
-# 5. 🔧 Customizations!
+# 5. Customizations! 🔧
 
-https://github.com/user-attachments/assets/26e2a3b0-4fde-4a3a-926f-ad9f1e1cfb07
+Thanks to the hard work of [@Multex](https://github.com/Multex), all of the following customizations can be done in the Gremlin Picker GUI! But, if you need to know what each variable does, you might still want to read this.
 
 ## How to Make Your Gremlin Annoy You (Occasionally!)
 
 Do you want the gremlins to annoy you at random time or not? 😜
 
-To control this, open `./spritesheet/<character>/emote-config.json`. You'll see:
+To control this, open `./gremlins/<character>/spritesheet/emote-config.json`. You'll see:
 
 ```json
 {
@@ -26,7 +26,23 @@ If you set `AnnoyEmote` to `false`, then nothing happens. If you set it to `true
 
 You can also trigger this animation by hovering over the gremlin and press "P". You can customize this key too, just take a look at `./config.json`.
 
-## How to Enable or Disable the System Tray
+## Other configurations
 
-This program's systray is disabled by default, and you won't lose any functionality by disabling the systray either. However, if you need it, you might enable it by modifying the `Systray` field in `./config.json` to `true`.
+For global settings that affect all your gremlins, check out the [config.json](../config.json) file.
+
+| Variable          | Description                                                                   |
+| :---------------- | :---------------------------------------------------------------------------- |
+| `Systray`         | Show/hide the app icon in your system tray                                    |
+| `MoveSpeed`       | How fast should the gremlins walk                                             |
+| `Scale`           | Edit this if your gremlin is too big or too small                             |
+| `Volume`          | SFX volume (in range 0..1)                                                    |
+| `AudioDevice`     | Set a specific audio device if your default isn't working                     |
+| `EmoteKeyEnabled` | Toggle the hotkey for triggering emote manually                               |
+| `EmoteKey`        | Change the emote trigger key                                                  |
+| `IdleMinutes`     | How long should the gremlin be idle before they decide to nap                 |
+| `SleepMinutes`    | How long shoudl the gremlin sleep before waking up naturally                  |
+
+---
+
+[--> Next chapter: Create Your Gremlins!](./06-create-your-gremlins.md)
 
