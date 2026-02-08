@@ -3,7 +3,8 @@
 # ========================================================================================
 # Installation Variables
 # ========================================================================================
-INSTALL_PATH="$HOME/.config/linux-desktop-gremlin"
+SCRIPT_DIR="$(dirname $(realpath "$0"))"
+INSTALL_PATH="$(dirname "$SCRIPT_DIR")"
 ICON_PATH="$INSTALL_PATH/icon.png"
 BIN_PATH="$HOME/.local/bin"
 
