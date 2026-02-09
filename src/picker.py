@@ -21,9 +21,11 @@ if project_root not in sys.path:
 
 try:
     from src.configs_loader import GREMLIN_DIRS, _resolve_char_path, ResourceType
+    from src.asset_downloader_gui import AssetDownloaderGui
 except ImportError:
     # Fallback if running from root as 'python -m src.picker'
     from .configs_loader import GREMLIN_DIRS, _resolve_char_path, ResourceType
+    from .asset_downloader_gui import AssetDownloaderGui
 
 # =================================================================================
 # CLASS: SettingsDialog (Global Config)
@@ -388,6 +390,19 @@ class GremlinPicker(QWidget):
         self.launch_btn.clicked.connect(self.launch_gremlin)
         self.launch_btn.setCursor(Qt.PointingHandCursor)
         
+        self.download_btn = QPushButton("Download")
+        self.download_btn.clicked.connect(self.open_downloader)
+        self.download_btn.setCursor(Qt.PointingHandCursor)
+        self.download_btn.setStyleSheet("""
+            QPushButton {
+                background-color: #2e7d32;
+                color: white;
+            }
+            QPushButton:hover {
+                background-color: #388e3c;
+            }
+        """)
+        
         self.settings_btn = QPushButton("Config")
         self.settings_btn.clicked.connect(self.open_settings)
         self.settings_btn.setCursor(Qt.PointingHandCursor)
@@ -402,6 +417,7 @@ class GremlinPicker(QWidget):
         """)
 
         btn_layout.addWidget(self.launch_btn, stretch=2)
+        btn_layout.addWidget(self.download_btn, stretch=1)
         btn_layout.addWidget(self.settings_btn, stretch=1)
         left_layout.addLayout(btn_layout)
         
@@ -568,6 +584,13 @@ class GremlinPicker(QWidget):
     def open_settings(self):
         dialog = SettingsDialog(self.project_root, self)
         dialog.exec()
+
+    def open_downloader(self):
+        dialog = AssetDownloaderGui(self)
+        dialog.exec()
+        # Refresh list after download
+        self.list_widget.clear()
+        self.populate_list()
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)

@@ -4,6 +4,8 @@ import sys
 from pathlib import Path
 from typing import Dict, TypedDict
 
+import shutil
+
 from PySide6.QtCore import Qt, QThread, Signal
 from PySide6.QtGui import QColor
 from PySide6.QtWidgets import (
@@ -82,6 +84,14 @@ class AssetDownloaderGui(QDialog):
         layout.addWidget(self.list_widget)
 
         # ---- make a simple button, in case people don't want to Mod+Q ------------------
+        self.delete_btn = QPushButton("Delete")
+        self.delete_btn.clicked.connect(self.delete_selected)
+        self.delete_btn.setEnabled(False)  # Disabled until an installed item is selected
+        self.delete_btn.setStyleSheet(
+            "background-color: #d32f2f; color: white; border: none; padding: 8px 16px; border-radius: 4px;"
+        )
+        self.delete_btn.setToolTip("Delete the selected installed gremlin")
+
         self.close_btn = QPushButton("Close")
         self.close_btn.clicked.connect(self.reject)
         self.close_btn.setStyleSheet(
@@ -91,6 +101,7 @@ class AssetDownloaderGui(QDialog):
 
         btn_layout = QHBoxLayout()
         btn_layout.addStretch()
+        btn_layout.addWidget(self.delete_btn)
         btn_layout.addWidget(self.close_btn)
         layout.addLayout(btn_layout)
 
@@ -109,6 +120,7 @@ class AssetDownloaderGui(QDialog):
 
         self.refresh_list()
         self.list_widget.itemDoubleClicked.connect(self.start_download)
+        self.list_widget.itemSelectionChanged.connect(self.on_selection_changed)
 
     def is_installed(self, asset_name: str) -> bool:
         """Checks if the asset exists in the gremlins folder."""
@@ -136,9 +148,8 @@ class AssetDownloaderGui(QDialog):
                 list_item = QListWidgetItem(item["name"])
             list_item.setData(self.data_bucket, item)
 
-            # disable clicking on installed assets
-            if installed:
-                list_item.setFlags(list_item.flags() & ~Qt.ItemFlag.ItemIsEnabled)
+            # Note: We keep installed items enabled so they can be selected for deletion
+            # The double-click handler will check if item is installed before downloading
 
             self.list_widget.addItem(list_item)
 
@@ -146,6 +157,10 @@ class AssetDownloaderGui(QDialog):
         item: AssetItem = list_item.data(self.data_bucket)
         name = item["name"]
         url = item["url"]
+
+        # Don't download if already installed
+        if item["installed"]:
+            return
 
         self._to_download_state(name)
         self.worker = DownloadWorker(name, url)
@@ -166,6 +181,45 @@ class AssetDownloaderGui(QDialog):
     def _to_standby_state(self):
         self.info_label.setText("Double click to download:")
         self.list_widget.setEnabled(True)
+
+    def on_selection_changed(self):
+        """Enable/disable delete button based on selection."""
+        selected_items = self.list_widget.selectedItems()
+        if not selected_items:
+            self.delete_btn.setEnabled(False)
+            return
+
+        item: AssetItem = selected_items[0].data(self.data_bucket)
+        # Only enable delete button if the item is installed
+        self.delete_btn.setEnabled(item["installed"])
+
+    def delete_selected(self):
+        """Delete the selected installed gremlin after confirmation."""
+        selected_items = self.list_widget.selectedItems()
+        if not selected_items:
+            return
+
+        item: AssetItem = selected_items[0].data(self.data_bucket)
+        name = item["name"]
+
+        reply = QMessageBox.question(
+            self,
+            "Confirm Deletion",
+            f"Are you sure you want to delete '{name}'?\n\nThis cannot be undone!",
+            QMessageBox.Yes | QMessageBox.No,
+            QMessageBox.No
+        )
+
+        if reply != QMessageBox.Yes:
+            return
+
+        target_path = resolve_asset_dir() / name
+        try:
+            shutil.rmtree(target_path)
+            self.info_label.setText(f"Deleted '{name}' successfully!")
+            self.refresh_list()
+        except Exception as e:
+            QMessageBox.critical(self, "Error", f"Failed to delete '{name}': {e}")
 
 
 if __name__ == "__main__":
