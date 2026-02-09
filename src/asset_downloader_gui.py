@@ -1,12 +1,11 @@
 import json
 import os
+import shutil
 import sys
 from pathlib import Path
 from typing import Dict, TypedDict
 
-import shutil
-
-from PySide6.QtCore import Qt, QThread, Signal
+from PySide6.QtCore import QThread, Signal
 from PySide6.QtGui import QColor
 from PySide6.QtWidgets import (
     QApplication,
@@ -86,7 +85,7 @@ class AssetDownloaderGui(QDialog):
         # ---- make a simple button, in case people don't want to Mod+Q ------------------
         self.delete_btn = QPushButton("Delete")
         self.delete_btn.clicked.connect(self.delete_selected)
-        self.delete_btn.setEnabled(False)  # Disabled until an installed item is selected
+        self.delete_btn.setEnabled(False)
         self.delete_btn.setStyleSheet(
             "background-color: #d32f2f; color: white; border: none; padding: 8px 16px; border-radius: 4px;"
         )
@@ -205,12 +204,12 @@ class AssetDownloaderGui(QDialog):
         reply = QMessageBox.question(
             self,
             "Confirm Deletion",
-            f"Are you sure you want to delete '{name}'?\n\nThis cannot be undone!",
-            QMessageBox.Yes | QMessageBox.No,
-            QMessageBox.No
+            f"Are you sure you want to delete '{name}'?",
+            QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,
+            QMessageBox.StandardButton.No,
         )
 
-        if reply != QMessageBox.Yes:
+        if reply != QMessageBox.StandardButton.Yes:
             return
 
         target_path = resolve_asset_dir() / name
