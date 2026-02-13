@@ -53,6 +53,7 @@ python3Packages.buildPythonApplication {
       qt6.qtbase
       qt6.qtwayland
       pipewire
+      requests
     ]
     ++ (with xorg; [
       libX11
