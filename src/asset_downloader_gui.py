@@ -70,6 +70,10 @@ class AssetDownloaderGui(QDialog):
         self.assets_data = load_asset_list()
         self.data_bucket = 69420  # unique role for storing data in QListWidgetItem
 
+        # Queue for the multiple gremlin downloads
+        self.download_queue = []
+        self.active_worker: DownloadWorker | None = None
+
         self.init_ui()
 
     def init_ui(self):
@@ -98,7 +102,14 @@ class AssetDownloaderGui(QDialog):
             "background-color: #528bff; color: white; border: none; padding: 8px 16px; border-radius: 4px;"
         )
 
+        self.download_all_btn = QPushButton("Download All")
+        self.download_all_btn.clicked.connect(self.download_all)
+        self.download_all_btn.setStyleSheet(
+            "background-color: #2e7d32; color: white; border: none; padding: 8px 16px; border-radius: 4px;"
+        )
+
         btn_layout = QHBoxLayout()
+        btn_layout.addWidget(self.download_all_btn)
         btn_layout.addStretch()
         btn_layout.addWidget(self.delete_btn)
         btn_layout.addWidget(self.close_btn)
@@ -162,19 +173,69 @@ class AssetDownloaderGui(QDialog):
             return
 
         self._to_download_state(name)
-        self.worker = DownloadWorker(name, url)
-        self.worker.finished.connect(self.on_finished)
-        self.worker.start()
+        self.active_worker = DownloadWorker(name, url)
+        self.active_worker.finished.connect(self.on_worker_finished)
+        self.active_worker.start()
+    
+    def download_all(self):
+        downloadable_items = [
+            item for item in self.assets_data.items() 
+            if not self.is_installed(item[0])
+        ]
 
-    def on_finished(self, success: bool, message: str):
-        self._to_standby_state()
+        if not downloadable_items:
+            QMessageBox.information(
+                self,
+                "Everyone is here!",
+                "All gremlins are already installed."
+            )
+            return
+
+        warning_box = QMessageBox.question(
+            self,
+            "Confirm Download",
+            f"This will download the {len(downloadable_items)} gremlins that are not yet installed. Are you sure?",
+            QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,
+            QMessageBox.StandardButton.No,
+        )
+
+        if warning_box != QMessageBox.StandardButton.Yes:
+            return
+        
+        self.download_queue = downloadable_items.copy()
+        self._to_download_all_state()
+        self.start_next_download()
+    
+    def start_next_download(self):        
+        item = self.download_queue.pop(0)
+        name, url = item
+
+        self.active_worker = DownloadWorker(name, url)
+        self.active_worker.finished.connect(self.on_worker_finished)
+        self.active_worker.start()
+
+    def _handle_single_finished(self, success: bool, message: str):
         if success:
             self.refresh_list()
         else:
             QMessageBox.critical(self, "Error", f"Failed to download: {message}")
+        
+    def on_worker_finished(self, success: bool, message: str):
+        # We have to refresh the list after every download
+        self._handle_single_finished(success, message)
+
+        if self.download_queue:
+            self.start_next_download()
+        else:
+            self._to_standby_state()    # Re-enables gremlin list
+            self.active_worker = None
 
     def _to_download_state(self, asset_name: str):
         self.info_label.setText(f"Downloading {asset_name}...")
+        self.list_widget.setEnabled(False)
+
+    def _to_download_all_state(self):
+        self.info_label.setText(f"Downloading all gremlins...")
         self.list_widget.setEnabled(False)
 
     def _to_standby_state(self):
