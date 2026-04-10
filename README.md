@@ -33,7 +33,7 @@ curl -s https://raw.githubusercontent.com/iluvgirlswithglasses/linux-desktop-gre
 
 ## 2. Extended Guide
 
-Wanna understand how things work, tweak details, or install on a setup where the install script can't automate everything? Follow these steps to get your gremlins up and running exactly the way you want:
+Wanna tweak details, or install on a setup where the install script can't automate everything? Follow these steps to get your gremlins up and running exactly the way you want:
 
 + [1. Configure your compositor](./docs/01-configure-compositor.md)
 + [2. Install this repository](./docs/02-install.md)
