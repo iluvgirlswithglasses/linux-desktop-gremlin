@@ -72,13 +72,20 @@ Therefore, if you'd like to contribute a new gremlin, please make two Pull Reque
 | :-------------------- | :------------------------------------------------------------ |
 | Agnes Tachyon         | [@TRKako](https://github.com/TRKako)                          |
 | Manhattan Cafe        | [@TRKako](https://github.com/TRKako)                          |
+| Calstone Light        | [@virtualspan](https://github.com/virtualspan)                |
+| Dream Journey         | [@virtualspan](https://github.com/virtualspan)                |
+| Durandal              | [@virtualspan](https://github.com/virtualspan)                |
 | Gold Ship             | [@TRKako](https://github.com/TRKako)                          |
 | Haru Urara            | [@TRKako](https://github.com/TRKako)                          |
 | Meisho Doto           | [@TRKako](https://github.com/TRKako)                          |
 | Oguri Cap             | [@TRKako](https://github.com/TRKako)                          |
 | T.M. Opera O          | [@TRKako](https://github.com/TRKako)                          |
+| Stay Gold             | [@virtualspan](https://github.com/virtualspan)                |
+| Tamamo Cross          | [@virtualspan](https://github.com/virtualspan)                |
 | Tachibana Hikari      | [@Xgameisdabest](https://github.com/Xgameisdabest)            |
 | Kurosaki Koyuki       | [@Xgameisdabest](https://github.com/Xgameisdabest)            |
+| Exusiai               | [@virtualspan](https://github.com/virtualspan)                |
+| Exusiai (with gun)    | [@virtualspan](https://github.com/virtualspan)                |
 | Speaki                | [@Quicksilver151](https://github.com/Quicksilver151)          |
 
 A massive, heartfelt thank you to our incredible asset contributors!
