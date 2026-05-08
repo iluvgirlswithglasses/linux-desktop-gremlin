@@ -102,7 +102,7 @@ python3Packages.buildPythonApplication {
     substituteInPlace $out/share/linux-desktop-gremlin/src/asset_downloader.py \
       --replace-fail \
         'suggested_dir = Path(BASE_DIR) / "gremlins"' \
-        'suggested_dir = GREMLIN_DIRS[0]' \
+        'suggested_dir = Path(os.path.expanduser("~/.local/share/linux-desktop-gremlin/gremlins"))' \
       --replace-fail \
         'zip_path = os.path.join(BASE_DIR, "temp_asset.zip")' \
         'zip_path = "/tmp/temp_asset.zip"'
@@ -110,7 +110,7 @@ python3Packages.buildPythonApplication {
     substituteInPlace $out/share/linux-desktop-gremlin/src/configs_loader.py \
       --replace-fail \
         'master_config = _load_json(os.path.join(BASE_DIR, "config.json"))' \
-        'master_config = _load_json(os.path.join(os.path.expanduser("~/.config/linux-desktop-gremlin"), "config.json"))'
+        'master_config = _load_json(os.path.expanduser("~/.config/linux-desktop-gremlin/config.json") if os.path.exists(os.path.expanduser("~/.config/linux-desktop-gremlin/config.json")) else os.path.join(BASE_DIR, "config.json"))'
 
     substituteInPlace $out/share/linux-desktop-gremlin/src/picker.py \
       --replace-fail \
