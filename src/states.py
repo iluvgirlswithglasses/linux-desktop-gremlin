@@ -48,6 +48,32 @@ def to_pascal_case(enum: Enum) -> str:
     return enum.name.title().replace("_", "")
 
 
+# ----------------------------------------------------------------------------------------
+# Transition-policy lists (single source of truth for all input managers)
+# ----------------------------------------------------------------------------------------
+
+# states from which the user can trigger idle-class actions (click, emote key)
+AllowedClickStates = [
+    State.WALK_IDLE,
+    State.IDLE,
+    State.HOVER,
+    State.SLEEP,
+]
+
+# states from which an emote can be triggered
+AllowedEmoteStates = AllowedClickStates
+
+# states from which walking can begin
+AllowedWalkStates = [
+    *AllowedClickStates,
+    State.WALK,
+]
+
+
+# ----------------------------------------------------------------------------------------
+# Categorize states by how they end
+# ----------------------------------------------------------------------------------------
+
 EndByFrameAnimations = [
     State.INTRO,
     State.LEFT_ACTION,

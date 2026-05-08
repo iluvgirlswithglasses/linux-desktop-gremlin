@@ -14,19 +14,16 @@ class HoverManager:
         state_manager: StateManager,
         timer_manager: TimerManager,
         window: QWidget,
-    ):
+    ) -> None:
         self.walk_manager = walk_manager
         self.state_manager = state_manager
         self.timer_manager = timer_manager
 
-        self.set_focus = window.setFocus
-        self.clear_focus = window.clearFocus
+        self._set_focus = window.setFocus
+        self._clear_focus = window.clearFocus
 
-        window.enterEvent = self.on_mouse_enter
-        window.leaveEvent = self.on_mouse_leave
-
-    def on_mouse_enter(self, _: QEnterEvent):
-        self.set_focus()
+    def on_mouse_enter(self, _: QEnterEvent) -> None:
+        self._set_focus()
         self.timer_manager.reset_idle_timer()
 
         match self.state_manager.current_state:
@@ -37,8 +34,8 @@ class HoverManager:
                 # let her sleep
                 pass
 
-    def on_mouse_leave(self, _):
-        self.clear_focus()
+    def on_mouse_leave(self, _: object) -> None:
+        self._clear_focus()
         self.walk_manager.record_mouse_leave()
 
         match self.state_manager.current_state:

@@ -1,71 +1,95 @@
-from PySide6.QtCore import Qt
+from PySide6.QtCore import QEvent, QObject, Qt
 from PySide6.QtWidgets import QWidget
 
 from ..fsm.state_manager import StateManager
 from ..fsm.timer_manager import TimerManager
-from ..states import State
+from ..states import AllowedClickStates, State
 from .hotspot_geometry import (
     compute_left_hotspot_geometry,
     compute_right_hotspot_geometry,
     compute_top_hotspot_geometry,
 )
+from .input_listeners import MouseListener
+
+
+class HotspotFilter(QObject):
+    """
+    Per-hotspot eventFilter. Right-click fires the hotspot action; left-click
+    forwards to the window's MouseListener so drag still works over hotspots.
+    """
+
+    def __init__(
+        self,
+        action_state: State,
+        allowed_from: list[State],
+        state_manager: StateManager,
+        timer_manager: TimerManager,
+        mouse_listener: MouseListener,
+        parent: QObject | None = None,
+    ) -> None:
+        super().__init__(parent)
+        self.action_state = action_state
+        self.allowed_from = allowed_from
+        self.state_manager = state_manager
+        self.timer_manager = timer_manager
+        self.mouse_listener = mouse_listener
+
+    def eventFilter(self, obj: QObject, event: QEvent) -> bool:  # noqa: ARG002
+        if event.type() != QEvent.Type.MouseButtonPress:
+            return False
+
+        btn = event.button()  # type: ignore[attr-defined]
+        if btn == Qt.MouseButton.RightButton:
+            if self.state_manager.current_state in self.allowed_from:
+                self.state_manager.transition_to(self.action_state)
+                self.timer_manager.reset_passive_timer()
+            return True  # always consume right-clicks on hotspot children
+        elif btn == Qt.MouseButton.LeftButton:
+            self.mouse_listener.on_mouse_press(event)  # type: ignore[arg-type]
+            return True
+        return False
 
 
 class HotspotManager:
     def __init__(
-        self, state_manager: StateManager, timer_manager: TimerManager, window: QWidget
-    ):
-        self.window = window
-        self.state_manager = state_manager
-        self.timer_manager = timer_manager
+        self,
+        state_manager: StateManager,
+        timer_manager: TimerManager,
+        mouse_listener: MouseListener,
+        window: QWidget,
+    ) -> None:
+        allowed_from = list(AllowedClickStates)
+        if state_manager.has_reload:
+            allowed_from.extend([State.LEFT_ACTION, State.RIGHT_ACTION])
 
-        # hotspots will trigger PAT / LEFT_ACTION / RIGHT_ACTION,
-        # which can only be entered from IDLE, HOVER, SLEEP;
-        # unless the character has shooting animations,
-        # then the LEFT_ACTION and RIGHT_ACTION is spammable
-        self.allowed_from = [
-            State.WALK_IDLE,
-            State.IDLE,
-            State.HOVER,
-            State.SLEEP,
-        ]
-        if self.state_manager.has_reload:
-            self.allowed_from.extend([State.LEFT_ACTION, State.RIGHT_ACTION])
+        # three child widgets used purely as click-target regions
+        self._t = QWidget(window)
+        self._l = QWidget(window)
+        self._r = QWidget(window)
 
-        # declare 3 hotspots: top, left, right
-        self.t = QWidget(self.window)
-        self.l = QWidget(self.window)
-        self.r = QWidget(self.window)
+        self._t.setGeometry(*compute_top_hotspot_geometry())
+        self._l.setGeometry(*compute_left_hotspot_geometry())
+        self._r.setGeometry(*compute_right_hotspot_geometry())
 
-        # set their geometries
-        self.t.setGeometry(*compute_top_hotspot_geometry())
-        self.l.setGeometry(*compute_left_hotspot_geometry())
-        self.r.setGeometry(*compute_right_hotspot_geometry())
+        # each hotspot gets its own filter with the matching action state
+        self._top_filter = HotspotFilter(
+            State.PAT, allowed_from, state_manager, timer_manager, mouse_listener
+        )
+        self._left_filter = HotspotFilter(
+            State.LEFT_ACTION,
+            allowed_from,
+            state_manager,
+            timer_manager,
+            mouse_listener,
+        )
+        self._right_filter = HotspotFilter(
+            State.RIGHT_ACTION,
+            allowed_from,
+            state_manager,
+            timer_manager,
+            mouse_listener,
+        )
 
-        # connect their click events
-        self.t.mousePressEvent = self._top_hotspot_click
-        self.l.mousePressEvent = self._left_hotspot_click
-        self.r.mousePressEvent = self._right_hotspot_click
-
-    def _on_hotspot_click(self, event, state: State):
-        # right click trigger hotspots
-        if event.button() == Qt.MouseButton.RightButton:
-            if self.state_manager.current_state in self.allowed_from:
-                self.state_manager.transition_to(state)
-                self.timer_manager.reset_passive_timer()
-        # left click is handled by the main window
-        elif event.button() == Qt.MouseButton.LeftButton:
-            self.window.mousePressEvent(event)
-
-    """
-    @! ---- Aliases --------------------------------------------------------------------------------
-    """
-
-    def _top_hotspot_click(self, event):
-        self._on_hotspot_click(event, State.PAT)
-
-    def _left_hotspot_click(self, event):
-        self._on_hotspot_click(event, State.LEFT_ACTION)
-
-    def _right_hotspot_click(self, event):
-        self._on_hotspot_click(event, State.RIGHT_ACTION)
+        self._t.installEventFilter(self._top_filter)
+        self._l.installEventFilter(self._left_filter)
+        self._r.installEventFilter(self._right_filter)

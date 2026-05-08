@@ -1,25 +1,12 @@
 import string
 
 from PySide6.QtGui import QKeyEvent
-from PySide6.QtWidgets import QWidget
 
 from ..fsm.state_manager import StateManager
 from ..fsm.timer_manager import TimerManager
 from ..fsm.walk_manager import WalkManager
 from ..settings import Preferences
-from ..states import State
-
-AllowedEmoteStates = [
-    State.WALK_IDLE,
-    State.IDLE,
-    State.HOVER,
-    State.SLEEP,
-]
-
-AllowedWalkStates = [
-    *AllowedEmoteStates,
-    State.WALK,
-]
+from ..states import AllowedEmoteStates, AllowedWalkStates, State
 
 
 def resolve_emote_key() -> int | None:
@@ -50,25 +37,13 @@ class KeyboardManager:
         state_manager: StateManager,
         walk_manager: WalkManager,
         timer_manager: TimerManager,
-        window: QWidget,
-    ):
-        # dependencies
+    ) -> None:
         self.state_manager = state_manager
         self.walk_manager = walk_manager
         self.timer_manager = timer_manager
-
-        # should I have created a separate manager for this?
         self.emote_key = resolve_emote_key()
 
-        # bind window's key events
-        window.keyPressEvent = self.on_key_press
-        window.keyReleaseEvent = self.on_key_release
-
-    """
-    @! ---- Event Listeners ------------------------------------------------------------------------
-    """
-
-    def on_key_press(self, event: QKeyEvent):
+    def on_key_press(self, event: QKeyEvent) -> None:
         if event.isAutoRepeat():
             return
 
@@ -93,7 +68,7 @@ class KeyboardManager:
             self.timer_manager.reset_emote_dur_timer()
             self.timer_manager.reset_passive_timer()
 
-    def on_key_release(self, event: QKeyEvent):
+    def on_key_release(self, event: QKeyEvent) -> None:
         if event.isAutoRepeat():
             return
 

@@ -1,4 +1,3 @@
-import sys
 from typing import Callable
 
 from ..engines import SoundEngine
@@ -7,20 +6,29 @@ from ..states import Direction, State
 
 
 class StateManager:
-    def __init__(self, sound_engine: SoundEngine, is_under_mouse: Callable[[], bool]):
+    def __init__(
+        self,
+        sound_engine: SoundEngine,
+        is_under_mouse: Callable[[], bool],
+        on_exit: Callable[[], None],
+    ) -> None:
         """
         Manages the current state of the gremlin and handles state transitions.
-        It has two dependencies:
-        1.   sound_engine:  To play sound effects during state transitions.
-        2. is_under_mouse:  A callable that checks if the gremlin is under the mouse cursor.
-        """
 
+        Parameters
+        ----------
+        sound_engine:    Plays audio on state transitions.
+        is_under_mouse:  Returns True when the gremlin window is under the cursor.
+        on_exit:         Called when the OUTRO animation completes; caller should
+                         terminate the application (e.g. QApplication.quit()).
+        """
         self.current_state = State.IDLE
         self.current_direction = Direction.NONE
 
         # dependencies
         self.sound_engine = sound_engine
-        self.is_under_mouse: Callable[[], bool] = is_under_mouse
+        self.is_under_mouse = is_under_mouse
+        self.on_exit = on_exit
 
         # shooting animation for Blue Archive characters
         self.has_reload = SpriteProperties.HasReloadAnimation
@@ -31,7 +39,7 @@ class StateManager:
         new_state: State,
         new_direction: Direction = Direction.NONE,
         playsound: bool = True,
-    ):
+    ) -> None:
         """
         Registers a state transition.
         """
@@ -48,14 +56,14 @@ class StateManager:
         self._reset_current_frame(new_state, new_direction)
         self.current_state = new_state
 
-    def to_idle_or_hover(self):
+    def to_idle_or_hover(self) -> None:
         if self.is_under_mouse():
             playsound = self.current_state in [State.IDLE, State.SLEEP]
             self.transition_to(State.HOVER, playsound=playsound)
         else:
             self.transition_to(State.IDLE)
 
-    def on_completion(self):
+    def on_completion(self) -> None:
         """
         Decide how to switch states upon animation completion.
         """
@@ -66,7 +74,7 @@ class StateManager:
             case State.LEFT_ACTION | State.RIGHT_ACTION:
                 self._check_reload()
             case State.OUTRO:
-                sys.exit(0)
+                self.on_exit()
 
             # EndByTimeoutAnimations
             case State.WALK_IDLE | State.EMOTE:
@@ -80,7 +88,7 @@ class StateManager:
     @! ---- Defines how must a state starts or ends ------------------------------------------------
     """
 
-    def _handle_entry_effect(self, new_state: State, playsound: bool):
+    def _handle_entry_effect(self, new_state: State, playsound: bool) -> None:
         # play the sound effect upon state switch
         if playsound:
             self.sound_engine.play(new_state)
@@ -109,11 +117,11 @@ class StateManager:
         frame_data = ResourceRegistry.get_animation(state, Direction.NONE)
         return frame_data.frame_count // 4 < frame_data.current_frame
 
-    def _reset_current_frame(self, state: State, direction: Direction):
+    def _reset_current_frame(self, state: State, direction: Direction) -> None:
         data = ResourceRegistry.get_animation(state, direction)
         data.current_frame = 0
 
-    def _check_reload(self):
+    def _check_reload(self) -> None:
         if self.has_reload and self.ammo == 0:
             self.transition_to(State.RELOAD)
         else:
