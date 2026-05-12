@@ -31,7 +31,7 @@ Firstly, you need `xwayland`. Since you're using Hyprland, I suspect you have it
 yay -S xorg-xwayland
 ```
 
-Then, add the following rules into your `~/.config/hypr/hyprland.conf`:
+Then, add the following rules into your `~/.config/hypr/hyprland.lua`:
 
 ```conf
 hl.window_rule({
