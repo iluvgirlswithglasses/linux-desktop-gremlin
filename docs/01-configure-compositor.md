@@ -34,13 +34,16 @@ yay -S xorg-xwayland
 Then, add the following rules into your `~/.config/hypr/hyprland.conf`:
 
 ```conf
-windowrule {
-    name = linux-gremlin
-    no_blur = on
-    no_shadow = on
-    border_size = 0
-    match:title = ilgwg_desktop_gremlins.py
-}
+hl.window_rule({
+	name = "linux-gremlin",
+	match = { class = "^(launcher\\.py)$", title = "^(ilgwg_desktop_gremlins\\.py)$" },
+	float = true,
+	border_size = 0,
+	no_shadow = true,
+	no_blur = true,
+	rounding = 0,
+	no_anim = true,
+})
 ```
 </details>
 
