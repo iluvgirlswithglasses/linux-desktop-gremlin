@@ -1,4 +1,6 @@
 import sys
+import os
+import subprocess
 
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import QApplication, QLabel, QWidget
@@ -28,6 +30,10 @@ class GremlinWindow(QWidget):
         self.setWindowFlags(
             Qt.WindowType.FramelessWindowHint | Qt.WindowType.WindowStaysOnTopHint
         )
+
+        # True if running under the niri compositor
+        self.is_niri = os.environ.get("NIRI_SOCKET") is not None
+
         self.setAttribute(Qt.WidgetAttribute.WA_TranslucentBackground)
         self.setFocusPolicy(Qt.FocusPolicy.StrongFocus)
 
@@ -84,6 +90,22 @@ class GremlinWindow(QWidget):
         dx, dy = self.walk_manager.get_velocity()
         if dx != 0 or dy != 0:
             self.move(self.pos().x() + dx, self.pos().y() + dy)
+            if self.is_niri:
+                subprocess.run(
+                    [
+                        "niri",
+                        "msg",
+                        "action",
+                        "move-floating-window",
+                        "--x",
+                        str(self.pos().x() + dx),
+                        "--y",
+                        str(self.pos().y() + dy),
+                    ],
+                    stdout=subprocess.DEVNULL,
+                    stderr=subprocess.DEVNULL,
+                    check=False,
+                )
 
     def _on_exit(self) -> None:
         self.timer_manager.stop_all()
