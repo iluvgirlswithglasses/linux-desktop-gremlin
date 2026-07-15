@@ -630,6 +630,12 @@ class GremlinPicker(QWidget):
             print(item.text())
             sys.exit(0)
 
+    def keyPressEvent(self, event):
+        if event.key() in (Qt.Key_Return, Qt.Key_Enter):
+            self.launch_gremlin()
+            return
+        super().keyPressEvent(event)
+
     def open_settings(self):
         dialog = SettingsDialog(self.project_root, self)
         dialog.exec()
